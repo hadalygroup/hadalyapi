@@ -12,6 +12,7 @@ from fastapi_cache.decorator import cache
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 from pydantic import BaseModel
+import market_data
 
 from config import settings
 

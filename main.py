@@ -45,6 +45,17 @@ def current_user():
         "extra_field_ignored_by_model": "This field is ignored by the response model",
     }
 
+@app.get("/data", response_model=UserResponse)
+def data():
+    # this endpoint's repsonse will match the UserResponse model
+    res=historical_data_gmd('AAPL',
+                        '01-01-2022',
+                        '02-02-2022',
+                        '1d',  PRE_PERIOD=0)
+    return {res}
+
+
+
 
 @app.get("/cached", response_model=UserResponse)
 @cache(expire=30)  # cache for 30 seconds

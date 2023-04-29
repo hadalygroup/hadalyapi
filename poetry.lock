@@ -462,6 +462,20 @@ files = [
 ]
 
 [[package]]
+name = "cryptocompare"
+version = "0.7.6"
+description = "Wrapper for CryptoCompare.com"
+category = "main"
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "cryptocompare-0.7.6.tar.gz", hash = "sha256:0183d14152b4f156cc2da9e5a769fcdd1ac144065109441a2e1c6ab0b4573edb"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "cryptography"
 version = "40.0.2"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
@@ -2349,4 +2363,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0f55d4a0a5e0ea89c45b2f9fec3a15c26ccbf08d3e1a7fe524e7f3bbb978886d"
+content-hash = "93c70e13472f5c1a6d36e84cd17e9ddf716cd8180efb7a16e7c2df07d3dd1ba4"

@@ -24,13 +24,13 @@ uvicorn = "^0.20.0"
 uvloop = "^0.17.0"
 watchfiles = "^0.18.1"
 websockets = "^10.4"
-yahoo_fin
-pandas
-datetime
-numpy
-yfinance
-ccxt
-cryptocompare
+yahoo_fin = "^0.8.9"
+pandas = "^1.4.1"
+datetime = "^4.3"
+numpy = "^1.23.1"
+yfinance = "^0.1.71"
+ccxt = "^1.65.72"
+cryptocompare = "^0.8.2"
 
 [tool.poetry.dev-dependencies]
 

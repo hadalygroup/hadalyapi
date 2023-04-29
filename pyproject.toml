@@ -28,8 +28,8 @@ yahoo_fin = "^0.8.9"
 pandas = "^1.4.1"
 datetime = "^4.3"
 numpy = "^1.23.1"
-yfinance = "^0.1.71"
-ccxt = "^1.65.72"
+yfinance = "^0.2.18"
+ccxt = "^3.0.83"
 
 [tool.poetry.dev-dependencies]
 

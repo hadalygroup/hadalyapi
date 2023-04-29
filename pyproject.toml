@@ -30,7 +30,6 @@ datetime = "^4.3"
 numpy = "^1.23.1"
 yfinance = "^0.1.71"
 ccxt = "^1.65.72"
-cryptocompare = "^0.7.5"
 
 [tool.poetry.dev-dependencies]
 

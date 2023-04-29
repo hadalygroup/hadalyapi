@@ -30,7 +30,7 @@ datetime = "^4.3"
 numpy = "^1.23.1"
 yfinance = "^0.2.18"
 ccxt = "^3.0.83"
-python-binance = "^1.0.16"
+python-binance = "^1.0"
 
 [tool.poetry.dev-dependencies]
 

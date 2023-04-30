@@ -56,7 +56,7 @@ async def data():
         res_dicts = [item.to_dict() for item in res]
 
     except Exception as e:
-        res_dicts={'error :', e}
+        res_dicts='error :', str(e)
     return {'test': res_dicts}
 
 

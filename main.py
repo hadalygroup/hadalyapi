@@ -53,10 +53,11 @@ async def data():
     await asyncio.sleep(5)
     try:
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
+        res_dicts = [item.to_dict() for item in res]
 
     except Exception as e:
-        res={'error :', e}
-    return {'test': res}
+        res_dicts={'error :', e}
+    return {'test': res_dicts}
 
 
 

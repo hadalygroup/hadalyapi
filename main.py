@@ -56,7 +56,7 @@ async def data():
     await asyncio.sleep(5)
     try:
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
-        for key, value in data.items():
+        for key, value in res.items():
             if isinstance(value, np.ndarray):
                 data[key] = value.tolist()
 

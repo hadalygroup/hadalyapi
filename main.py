@@ -2,6 +2,8 @@ import asyncio
 import logging
 import subprocess
 import time
+import json
+import numpy as np
 
 import redis.asyncio as redis
 import uvicorn
@@ -13,6 +15,7 @@ from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 from pydantic import BaseModel
 from market_data import historical_data_gmd
+
 
 from config import settings
 
@@ -53,6 +56,12 @@ async def data():
     await asyncio.sleep(5)
     try:
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
+        for key, value in data.items():
+        if isinstance(value, np.ndarray):
+            data[key] = value.tolist()
+
+        # Convert the dictionary to a JSON-formatted string
+        res = json.dumps(data)
     except Exception as e:
         res='error :'+ str(e)
     return res

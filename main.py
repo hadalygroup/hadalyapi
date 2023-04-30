@@ -58,10 +58,10 @@ async def historic():
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
         for key, value in res.items():
             if isinstance(value, np.ndarray):
-                data[key] = value.tolist()
+                res[key] = value.tolist()
 
         # Convert the dictionary to a JSON-formatted string
-        res = json.dumps(data)
+        res = json.dumps(res)
     except Exception as e:
         res='error :'+ str(e)
     return res

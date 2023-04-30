@@ -57,7 +57,7 @@ async def data():
                             '03-02-2022',
                             '1d',  PRE_PERIOD=0)
     except Exception as e:
-        res=e
+        res={'error :', e}
     return {'test': res}
 
 

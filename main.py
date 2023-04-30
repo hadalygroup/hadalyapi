@@ -55,7 +55,7 @@ async def data():
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
     except Exception as e:
         res='error :'+ str(e)
-    return {'test': {res}}
+    return res
 
 
 

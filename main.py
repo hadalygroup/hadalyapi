@@ -50,10 +50,13 @@ async def data():
     # for demonstration purposes, this is a slow endpoint that waits 5 seconds
     await asyncio.sleep(5)
     # this endpoint's repsonse will match the UserResponse model
-    res=historical_data_gmd('AAPL',
-                        '01-01-2022',
-                        '02-02-2022',
-                        '1d',  PRE_PERIOD=0)
+    try:
+        res=historical_data_gmd('AAPL',
+                            '01-01-2022',
+                            '02-02-2022',
+                            '1d',  PRE_PERIOD=0)
+    except Exception as e:
+        res=e
     return {'test': res}
 
 

@@ -12,7 +12,7 @@ from fastapi_cache.decorator import cache
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 from pydantic import BaseModel
-import market_data
+from market_data import historical_data_gmd
 
 from config import settings
 
@@ -26,6 +26,8 @@ class UserResponse(BaseModel):
     user_id: str
     email: str
     name: str
+
+
 
 
 @app.get("/")
@@ -45,7 +47,7 @@ def current_user():
         "extra_field_ignored_by_model": "This field is ignored by the response model",
     }
 
-@app.get("/data", response_model=UserResponse)
+@app.get("/data")
 async def data():
     # for demonstration purposes, this is a slow endpoint that waits 5 seconds
     await asyncio.sleep(5)

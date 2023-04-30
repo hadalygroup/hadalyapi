@@ -57,8 +57,8 @@ async def data():
     try:
         res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
         for key, value in data.items():
-        if isinstance(value, np.ndarray):
-            data[key] = value.tolist()
+            if isinstance(value, np.ndarray):
+                data[key] = value.tolist()
 
         # Convert the dictionary to a JSON-formatted string
         res = json.dumps(data)

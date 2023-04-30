@@ -50,8 +50,8 @@ def current_user():
         "extra_field_ignored_by_model": "This field is ignored by the response model",
     }
 
-@app.get("/data")
-async def data():
+@app.get("/historic")
+async def historic():
     # for demonstration purposes, this is a slow endpoint that waits 5 seconds
     await asyncio.sleep(5)
     try:

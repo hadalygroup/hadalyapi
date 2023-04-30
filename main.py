@@ -52,10 +52,8 @@ async def data():
     # for demonstration purposes, this is a slow endpoint that waits 5 seconds
     await asyncio.sleep(5)
     try:
-        res=historical_data_gmd('MSFT',
-                            '01-01-2022',
-                            '03-02-2022',
-                            '1d',  PRE_PERIOD=0)
+        res=historical_data_gmd("aapl", '2022-01-06', '2022-01-12', '1d')
+
     except Exception as e:
         res={'error :', e}
     return {'test': res}

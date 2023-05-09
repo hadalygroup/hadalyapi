@@ -53,7 +53,7 @@ def historical_data_gmd(STOCK_ID,
         inputs=get_data_cryptocompare(STOCK_ID=STOCK_ID,
                         START_DATE=START_DATE,
                         END_DATE=END_DATE,
-                        TIME_INTERVAL=TIME_INTERVAL)
+                        TIME_INTERVAL=TIME_INTERVAL) 
 
     if inputs==0 and '/' in STOCK_ID:
         inputs=get_data_binance(STOCK_ID=STOCK_ID,
@@ -143,7 +143,7 @@ def get_data_binance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
             'close': data['close'].to_numpy(),
             'volume': data['volume'].to_numpy(),
             'close_time': data['close_time'].to_numpy()}
-        print('data retrieved')
+        print('data retrieved from binance') 
     except Exception as e:
         #print(e)
         print('did not managed to get data from binance')
@@ -293,7 +293,7 @@ def get_data_yfin(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
                         'close': data['close'].to_numpy(),
                         'volume': data['volume'].to_numpy(),
                         'close_time': [datetime.timestamp(i)*1000 for i in list(data['close_time'])]}
-        print('data retrieved')
+        print('data retrieved from yfin')
     except Exception as e:
         print(e)
         print('did not managed to get data from yfin')
@@ -351,7 +351,7 @@ def get_data_yfinance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
                     'close': data['Close'].to_numpy(),
                     'volume': data['Volume'].to_numpy(),
                     'close_time': data['close_time'].to_numpy()}
-        print('data retrieved')
+        print('data retrieved from yfinance')
     except Exception as e:
             print('did not managed to get data from yfinance',e)
             inputs=0

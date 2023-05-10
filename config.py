@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     # redis credentials
     REDISUSER: str = ""
     REDISPASSWORD: str = ""
-    REDISHOST: str = "localhost"
-    REDISPORT: str = "6379"
+    REDISHOST: str = "containers-us-west-7.railway.app"
+    REDISPORT: str = "6754"
 
     @validator("REDISHOST", "REDISPORT")
     def check_redis(cls, v, field):

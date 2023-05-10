@@ -7,7 +7,6 @@ from fastapi_cache.decorator import cache
 
 router = APIRouter()
 
-@cache(expire=60)
 @router.get("/historic")
 # /historic?symbol=aapl&start_date=2022-01-06&end_date=2022-01-12&interval=1d
 async def historic(symbol: str, start_date: str, end_date: str, interval: str):
@@ -19,6 +18,7 @@ async def historic(symbol: str, start_date: str, end_date: str, interval: str):
                 res[key] = value.tolist()
 
         # Convert the dictionary to a JSON-formatted string
+        print(res['open'])
         res = json.dumps(res)
     except Exception as e:
         res = 'error :' + str(e)

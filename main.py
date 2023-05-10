@@ -9,13 +9,13 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
+from fastapi.middleware.cors import CORSMiddleware
 
 from routes.user import router as user_router
 from routes.root import router as root_router
 from routes.historic import router as historic_router
 from routes.cached import router as cache_router
 from routes.patterns import router as pattern_router
-
 
 from config import settings
 
@@ -24,11 +24,22 @@ logger = logging.getLogger(__name__)
 # .env variables can be validated and accessed from the config, here to set a log level
 logging.basicConfig(level=settings.LOG_LEVEL.upper())
 
+origins = ["http://localhost:3000","http://localhost"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(root_router)
 app.include_router(user_router)
 app.include_router(historic_router)
 app.include_router(cache_router)
 app.include_router(pattern_router)
+
 
 
 @app.on_event("startup")

@@ -13,9 +13,7 @@ RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
 
 RUN rm -R ta-lib ta-lib-0.4.0-src.tar.gz
 RUN cd ..
-RUN poetry shell
 RUN pip install TA-Lib
 # Install Poetry & Setup app
 RUN poetry config virtualenvs.create false
 RUN poetry install
-RUN poetry shell

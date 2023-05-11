@@ -18,4 +18,5 @@ COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
 EXPOSE 8000
-CMD poetry run dev
+CMD poetry shell
+CMD uvicorn main:app --host 0.0.0.0 --port 8000

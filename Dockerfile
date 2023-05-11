@@ -1,6 +1,8 @@
 FROM python:3.10
 WORKDIR /app
 COPY . .
+
+RUN pip install poetry
 # Install TA-lib
 
 RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
@@ -9,14 +11,11 @@ RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
     make && \
     make install
 
-RUN cd ..
-RUN pip install TA-Lib
-
 RUN rm -R ta-lib ta-lib-0.4.0-src.tar.gz
-
+RUN cd ..
+RUN poetry shell
+RUN pip install TA-Lib
 # Install Poetry & Setup app
-RUN pip install poetry
-COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
 RUN poetry shell

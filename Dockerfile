@@ -19,4 +19,3 @@ COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
 CMD poetry shell
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT

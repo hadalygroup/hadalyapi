@@ -18,5 +18,5 @@ RUN pip install poetry
 COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
-EXPOSE 8000
+EXPOSE 
 CMD poetry run dev

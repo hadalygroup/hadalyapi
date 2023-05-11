@@ -18,4 +18,3 @@ RUN pip install poetry
 COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
-CMD poetry shell

@@ -1,5 +1,6 @@
 FROM python:3.10
 WORKDIR /app
+COPY . .
 # Install TA-lib
 
 RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
@@ -8,7 +9,7 @@ RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
     make && \
     make install
 
-RUN cd ../..
+RUN cd ..
 RUN pip install TA-Lib
 
 RUN rm -R ta-lib ta-lib-0.4.0-src.tar.gz

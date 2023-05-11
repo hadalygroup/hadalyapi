@@ -1,6 +1,6 @@
 FROM python:3.10
 WORKDIR /app
-
+ARG PORT
 # Install TA-lib
 
 RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
@@ -18,5 +18,5 @@ RUN pip install poetry
 COPY pyproject.toml .
 RUN poetry config virtualenvs.create false
 RUN poetry install
-EXPOSE 8000
+EXPOSE PORT
 CMD poetry run dev

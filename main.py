@@ -44,7 +44,7 @@ app.include_router(pattern_router)
 
 @app.on_event("startup")
 async def startup():
-    redis_url = f"redis://{settings.REDISUSER}:{settings.REDISPASSWORD}@{settings.REDISHOST}:{settings.REDISPORT}"
+    redis_url = f"redis://default:SLTXD3Xogqt1PAu7tYts@containers-us-west-7.railway.app:6754"
     try:
         red = redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
         await FastAPILimiter.init(red)

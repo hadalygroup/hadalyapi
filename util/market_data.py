@@ -30,9 +30,6 @@ get_data_binance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL)
 get_data_yfin(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL)
 get_data_yfinance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL)
 """
-
-
-
 def historical_data_gmd(STOCK_ID,
                         START_DATE,
                         END_DATE,
@@ -120,7 +117,6 @@ data['close_time'].to_numpy()
 Note: This function uses the python-binance library and requires an API key and secret
 to work. The actual API call has been commented out in the code.
 """
-
 def get_data_binance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
     try:
         #client = Client('api_key', 'api_secret')
@@ -150,8 +146,6 @@ def get_data_binance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
         inputs=0
     return inputs
 
-
-
         ######################## KUCOIN ############################
 """
 Function name: get_data_kucoin
@@ -170,7 +164,6 @@ exchange.load_markets()
 exchange.fetch_ohlcv()
 pd.DataFrame()
 """
-
 def get_data_kucoin(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
     try:
         exchange_id = 'kucoin'
@@ -265,7 +258,6 @@ datetime.strptime() from the datetime library
 datetime.strftime() from the datetime library
 datetime.timestamp() from the datetime library
 """
-
 def get_data_yfin(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
     # from datetime import datetime
     try:
@@ -314,23 +306,6 @@ inputs (dictionary): A dictionary containing historical data for the stock such 
 open, high, low, close, volume and close_time.
 Called functions: yf.download()
 """
-
-# def get_data_yfinance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
-#     try:
-#         data = yf.download(STOCK_ID, start=START_DATE, end=END_DATE, interval = TIME_INTERVAL)
-
-#         inputs = {  'open': data['Open'].to_numpy(),
-#                     'high': data['High'].to_numpy(),
-#                     'low': data['Low'].to_numpy(),
-#                     'close': data['Close'].to_numpy(),
-#                     'volume': data['Volume'].to_numpy(),
-#                     'close_time': data.index.to_numpy()}
-#         print('data retrieved')
-#     except Exception as e:
-#             print('did not managed to get data from yfinance')
-#             inputs=0
-#     return inputs
-
 def get_data_yfinance(STOCK_ID,START_DATE,END_DATE,TIME_INTERVAL):
     try:
         data = yf.download(STOCK_ID, start=START_DATE, end=END_DATE, interval = TIME_INTERVAL)

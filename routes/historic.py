@@ -2,8 +2,7 @@ import numpy as np
 import json
 
 from fastapi import APIRouter
-from market_data import historical_data_gmd
-from fastapi_cache.decorator import cache
+from util.market_data import historical_data_gmd
 
 router = APIRouter()
 

@@ -16,6 +16,9 @@ class Hadaly_Engine:
 
         self.close_time = 0
         self.in_trade: int = 0
+
+        self.stock_price = 0
+        self.stock_qty = 0
     
     def buy(self, transaction_amount: int):
         if (self.cash_wallet < transaction_amount):
@@ -23,3 +26,4 @@ class Hadaly_Engine:
         
         elif self.cash_wallet >= transaction_amount:
             self.buy_move += 1
+            trade_qty = transaction_amount/self.st

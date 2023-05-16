@@ -2,7 +2,7 @@ from typing import List
 from pydantic import BaseModel
 
 
-class Indicators(BaseModel):
+class Request(BaseModel):
     indicators: List[str]
     symbol: str
     start_date: str

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 # .env variables can be validated and accessed from the config, here to set a log level
 logging.basicConfig(level=settings.LOG_LEVEL.upper())
 
-origins = ["http://localhost:3000","http://localhost","https://landing-page-p57ip5e6s-logicielshadaly.vercel.app/graph", "https://landing-page-p57ip5e6s-logicielshadaly.vercel.app/graph"]
+origins = ["http://localhost:3000","http://localhost","https://landing-page-p57ip5e6s-logicielshadaly.vercel.app"]
 
 app.add_middleware(
     CORSMiddleware,

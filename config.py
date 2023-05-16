@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:8000",
         "https://your-app.com",
+        "https://landing-page-p57ip5e6s-logicielshadaly.vercel.app"
     ]
     # allow any localhost port
     BACKEND_CORS_ORIGINS_REGEX: str = r"^(http://localhost:\d+|https://your-app\.com)$"

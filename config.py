@@ -24,10 +24,11 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # redis credentials
-    REDISUSER: str = ""
+    REDISUSER: str = "" # faire en sorte d'utiliser dotenv
     REDISPASSWORD: str = ""
-    REDISHOST: str = "localhost"
-    REDISPORT: str = "6379"
+    REDISHOST: str = ""
+    REDISPORT: str = ""
+
 
     @validator("REDISHOST", "REDISPORT")
     def check_redis(cls, v, field):

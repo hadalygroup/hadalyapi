@@ -1,4 +1,38 @@
-import datetime
+import json
+from typing import List
+
+class Strategy:
+    def __init__(self, strategyString):
+        strategy = json.loads(strategyString)
+        self.setExitLogic(strategy["EXIT"]["LOGIC"])
+        
+    def setExitLogic(self, exitList: List[str]):
+        pass
+
+    def isEntry(self):
+        pass
+        
+
+class Stock:
+    def __init__(self, data):
+        self.quantity = 0
+        self.price = data['close'][0]
+        self.close_time = data['close_time'][0]
+
+class Portfolio:
+    def __init__(self, stocks: List[Stock], wallet_value: int, stocks_value: int):
+        self.stocks = stocks
+        self.wallet_value = wallet_value
+        self.stocks_value = stocks_value
+        self.portfolio_value = wallet_value + stocks_value
+        self.in_trade = 0
+
+        for stock in self.stocks:
+            self.quantity += stock.quantity
+        
+    def setStrategy(self, strategy)
+        
+        
 
 class Hadaly_Engine:
     def __init__(self):
@@ -17,13 +51,7 @@ class Hadaly_Engine:
         self.close_time = 0
         self.in_trade: int = 0
 
-        self.stock_price = 0
-        self.stock_qty = 0
+        self.portfolio: Portfolio = None
     
-    def buy(self, transaction_amount: int):
-        if (self.cash_wallet < transaction_amount):
-            raise ValueError("Insufficient funds")
-        
-        elif self.cash_wallet >= transaction_amount:
-            self.buy_move += 1
-            trade_qty = transaction_amount/self.st
+    
+

@@ -42,7 +42,7 @@ async def get_indicators(indicators: Request):
         for indicator in indicators.indicators:
             indicator_value = calculate_indicators(stock_data,indicator)
             res[indicator] = indicator_value.tolist()
-
+        res = {"dates": stock_data['close'].tolist(), "indicators": res}
         res = json.dumps(res)
     except Exception as e:
         res = 'error :' + str(e)

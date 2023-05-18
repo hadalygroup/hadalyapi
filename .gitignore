@@ -6,8 +6,10 @@ __pycache__/
 engine/
 # C extensions
 *.so
+
 .DS_Store
 tests/
+engine/
 
 # Distribution / packaging
 .Python

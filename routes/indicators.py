@@ -4,11 +4,11 @@ import json
 from fastapi import APIRouter
 from util.market_data import historical_data_gmd
 from models.Indicator_request import Indicator_Request as Request
-router = APIRouter()
 
 from talib import abstract
 import numpy as np
-from util.get_value_at_time import get_value_at_time
+
+router = APIRouter()
 
 def calculate_indicators(inputs, ind_to_calculate: str, ADOSC_fastperiod = 3, ADOSC_slowperiod = 10):
     # ind=str(list(ind_to_calculate.keys())[0])s

@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:8000",
-        "https://landing-page-p57ip5e6s-logicielshadaly.vercel.app"
+        "https://landing-page-p57ip5e6s-logicielshadaly.vercel.app",
+        "https://landing-page-qr73mleib-logicielshadaly.vercel.app/"
     ]
     # allow any localhost port
     BACKEND_CORS_ORIGINS_REGEX: str = r"^(http://localhost:\d+|https://landing-page-p57ip5e6s-logicielshadaly.vercel.app)$"

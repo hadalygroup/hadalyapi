@@ -11,5 +11,5 @@ class Hadaly_Engine:
         self.simulate(self, data)
     
     def simulate(self, data):
-        self.commander.backtest_strategy(data)
+        self.commander.backtest_strategy(data, start_date, end_date)
         

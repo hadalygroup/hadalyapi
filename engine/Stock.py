@@ -1,4 +1,4 @@
 class Stock:
-    def __init__(self, data):
-        self.price = data['close'][0]
-        self.close_time = data['close_time'][0]
+    def __init__(self, close, close_time):
+        self.price = close
+        self.close_time = close_time

@@ -3,7 +3,6 @@ import json
 
 from fastapi import APIRouter
 from util.market_data import historical_data_gmd
-from models.Historic_request import Historic_request
 
 router = APIRouter()
 

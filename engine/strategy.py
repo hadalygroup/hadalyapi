@@ -1,4 +1,5 @@
 import json
+import numpy as np
 from util.calculateIndicators import calculateIndicators
 from engine.Stock import Stock
 
@@ -8,6 +9,7 @@ class Strategy:
         
         self.cash_wallet = cash_wallet
         self.stock_wallet = stock_wallet
+        self.updatePortfolioValue()
         
         self.strategy = self.convert_crossover(strategy)
 
@@ -15,21 +17,25 @@ class Strategy:
         self.logic_exit = self.strategy['EXIT']['LOGIC']
         self.indicators_entry = self.strategy['ENTRY']['INDICATORS']
         self.indicators_exit = self.strategy['EXIT']['INDICATORS']
-        self.exposure_entry = self.strategy['ENTRY']['EXPOSURE']
-        self.exposure_exit = self.strategy['EXIT']['EXPOSURE']
+        self.exposure_entry = float(self.strategy['ENTRY']['EXPOSURE'])
+        self.exposure_exit = float(self.strategy['EXIT']['EXPOSURE'])
 
         self.stop_loss = 0
         self.take_profit = 0
         self.trailing_stop = 0
 
         if self.strategy["SECURITY"]['stop_loss']['status']==1:
-            self.stop_loss = self.strategy["SECURITY"]['stop_loss']['value']
+            self.stop_loss = float(self.strategy["SECURITY"]['stop_loss']['value'])
 
         if self.strategy["SECURITY"]['take_profit']['status']==1:
-            self.take_profit = self.strategy["SECURITY"]['take_profit']['value']
+            self.take_profit = float(self.strategy["SECURITY"]['take_profit']['value'])
 
         if self.strategy["SECURITY"]['trailing_stop']['status']==1:
-            self.trailing_stop = self.strategy["SECURITY"]['trailing_stop']['value']
+            self.trailing_stop = float(self.strategy["SECURITY"]['trailing_stop']['value'])
+
+    def updatePortfolioValue(self):
+        self.portfolio_value = self.cash_wallet + self.stock_wallet
+        return
 
     def convert_crossover(self,strategy):
         operators=[' + ',' - ',' > ',' < ',' = ',' and ',' or ',' ( ',' ) ' , ' crossover ',' crossunder ']
@@ -47,14 +53,13 @@ class Strategy:
             proc_strat['EXIT']['INDICATORS']=proc_exit_indicators
         return proc_strat
 
-    def do_Strategy(self, data):
+    def backtest_strategy(self, data):
         self.data = data
-        self.in_trade = 0
-        self.stock_qty= self.stock_wallet / self.stock_price
+        self.in_trade = False
         
         self.buy_move=0
         self.sell_move=0
-        self.transaction_monitor=0
+        self.transaction_monitor = False
 
         dict_portfolio = {'cash_wallet': [] ,
                     'stock_wallet': [] ,
@@ -77,7 +82,7 @@ class Strategy:
         last_stock_price=0
 
         for day in range( len(data['close'])):
-            stock = Stock(data)
+            stock = Stock(data['close'][day], data['close_time'][day])
             should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
             should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
 
@@ -86,7 +91,110 @@ class Strategy:
 
             take_profit_price = security_stock_price * (1+ float(self.take_profit)/100)
             stop_loss_price = security_stock_price * (1- float(self.stop_loss))
+
+
+            if should_entry and not self.in_trade:
+                bought, n_stocks_bought = self.buy(self.exposure_entry,stock=stock)
+                if bought:
+                    security_stock_price = stock.price
+                    log = 'timestamp: ' + str(stock.close_time) + '--' + str(n_stocks_bought)
+                    self.in_trade = True
+                    trailing_stop_price = stock.price * (1 - self.trailing_stop/100)
+                    memory_buy_price = stock.price
+                else:
+                    log = 'timestamp: ' + str(stock.close_time) + '------no cash available to buy------- cash available: ' + \
+                        str(self.cash_wallet) + '-- trans_amount: ' + str(n_stocks_bought)
+                dict_portfolio['move_info'].append(np.nan)
             
+            elif stock.price > take_profit_price and self.take_profit != 0 and self.in_trade:
+                sold, n_stocks_sold = self.sell(self.exposure_exit, stock= stock)
+                if sold:
+                    security_stock_price = stock.price
+                    log = 'timestamp: '+ str(stock.close_time) + '--' + 'take_profit exit at price: ' + \
+                        str(take_profit_price)+ 'real exposure: ' + str(n_stocks_sold)
+                    self.in_trade = False
+                    trade_return = (stock.price - memory_buy_price)*100/memory_buy_price
+                    dict_portfolio['trade_return'].append(trade_return)
+                    dict_portfolio['move_info'].append('TP')
+                else:
+                    log='timestamp: '+str(stock.close_time) + '------no stock available to sell------'
+                    dict_portfolio['move_info'].append(np.nan)
+
+            elif should_exit and self.in_trade:
+                sold, n_stocks_sold = self.sell(self.exposure_exit, stock=stock)
+                if sold:
+                    security_stock_price = stock.price
+                    log='timestamp: '+str(stock.close_time)+'--',"sell_exposure: "+str(n_stocks_sold)
+                    self.in_trade = False
+                    trade_return = (stock.price-memory_buy_price)*100/memory_buy_price
+                    dict_portfolio['trade_return'].append(trade_return)
+                    dict_portfolio['move_info'].append('exit')
+                else:
+                    log='timestamp: '+ str(stock.close_time)+'--'+'------no stock available to sell------'
+                    dict_portfolio['move_info'].append(np.nan)
+
+            elif stock.price < stop_loss_price and self.stop_loss != 0 and self.in_trade:
+                sold, n_stocks_sold = self.sell(self.exposure_exit, stock=stock)
+                if sold:
+                    security_stock_price = stock.price
+                    log='timestamp: '+ str(stock.close_time)+'--'+'trailing_stop exit at price: '+str(trailing_stop_price)
+                    self.in_trade = False
+                    trade_return=(stock.price - memory_buy_price)*100/memory_buy_price
+                    dict_portfolio['trade_return'].append(trade_return)
+                    dict_portfolio['move_info'].append('TS')
+    
+    def buy(self, transaction_amount: float, stock: Stock):
+        trade_qty = int(transaction_amount/stock.price)
+        transaction_amount = trade_qty * stock.price #Met le vrai prix (on ne peut pas acheter des quarts d'actions)
+        if self.cash_wallet >= transaction_amount:
+            buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
+        elif self.cash_wallet < transaction_amount and self.cash_wallet > 1:
+            buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
+        else:
+            self.buy_move = 0
+            self.transaction_monitor = False
+            self.updatePortfolioValue()
+            trade_qty = 0
+            buy_result = False
+        return buy_result, trade_qty
+    
+    def validateBuy(self, transaction_amount: float, trade_qty: int):
+        self.sell_move = 0
+        self.buy_move = 1
+        self.cash_wallet -= transaction_amount
+        self.stock_wallet += transaction_amount
+        self.updatePortfolioValue()
+        self.stock_qty += trade_qty
+        self.transaction_monitor = True
+        return True
+    
+    def sell(self, transaction_amount: float, stock: Stock):
+        trade_qty = int(transaction_amount/stock.price)
+        transaction_amount = trade_qty * stock.price
+        if self.stock_wallet >= transaction_amount:
+            sell_result = self.validateSell(transaction_amount,trade_qty = trade_qty)
+
+        elif self.stock_wallet < transaction_amount and self.stock_wallet > 1:
+            sell_result = self.validateSell(transaction_amount, trade_qty = trade_qty)
+        
+        else:
+            self.sell_move = 0
+            self.transaction_monitor = False
+            self.updatePortfolioValue()
+            sell_result = False
+            trade_qty = 0
+        return sell_result, trade_qty
+
+
+    def validateSell(self, transaction_amount: float, trade_qty: int):
+        self.buy_move = 0
+        self.sell_move = 1
+        self.cash_wallet += transaction_amount
+        self.stock_wallet -= transaction_amount
+        self.updatePortfolioValue()
+        self.stock_qty -= trade_qty
+        self.transaction_monitor = True
+        return True
 
     def eval_condition(self, logic, logic_indicators, indicators_value, index):
         condition =self.translate_condition(logic, logic_indicators, indicators_value, index)

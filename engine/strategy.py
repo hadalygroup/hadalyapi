@@ -16,8 +16,8 @@ class Strategy:
 
         self.logic_entry = self.strategy['ENTRY']['LOGIC']
         self.logic_exit = self.strategy['EXIT']['LOGIC']
-        self.indicators_entry = self.strategy['ENTRY']['INDICATORS']
-        self.indicators_exit = self.strategy['EXIT']['INDICATORS']
+        self.indicators_entry = self.setIndicators(self.strategy['ENTRY']['INDICATORS'])
+        self.indicators_exit = self.setIndicators(self.strategy['EXIT']['INDICATORS'])
         self.exposure_entry = float(self.strategy['ENTRY']['EXPOSURE'])
         self.exposure_exit = float(self.strategy['EXIT']['EXPOSURE'])
 
@@ -37,6 +37,55 @@ class Strategy:
     def updatePortfolioValue(self):
         self.portfolio_value = self.cash_wallet + self.stock_wallet
         return
+    
+    def setIndicators(self, indicators_dict):
+        indicators = []
+        for i in indicators_dict:
+            for key in i.keys():
+                indicators.append(key)
+        return indicators
+        
+
+    def convert_cross_part(self,logic):
+        coplogic=logic.copy()
+        step=0
+        while {' crossover ': {}} in coplogic:
+            compt=0
+            for i in coplogic:
+                if list(i.keys())[0]==' crossover ':
+                    pre_cross=coplogic[compt-1]
+                    post_cross=coplogic[compt+1]
+                    post_cross_pos=compt+1
+                compt+=1
+            dicc= {'pre_cross':pre_cross,'post_cross':post_cross,'post_cross_pos':post_cross_pos}
+
+            newd=dicc.copy()
+
+            pos=dicc['post_cross_pos']+1
+
+            dic2pre=newd['pre_cross'].copy() #
+            dic3pre=dic2pre[list(dic2pre.keys())[0]].copy()
+            dic3pre['time']=1
+            dic2pre[list(dic2pre.keys())[0]]=dic3pre
+
+            dic2post=newd['post_cross'].copy() #
+            dic3post=dic2post[list(dic2post.keys())[0]].copy()
+            dic3post['time']=1
+            dic2post[list(dic2post.keys())[0]]=dic3post
+
+            downcrossup_trad=[{' ( ': {}},dic2pre, {' < ': {}}, dic2post,{' ) ': {}},{' and ': {}}, {' ( ': {}},dicc['pre_cross'], {' > ': {}}, dicc['post_cross'],{' ) ': {}}]
+
+            user_list = coplogic
+            count = 11
+            for i in range(count):
+                user_list.insert(pos+i, downcrossup_trad[i])
+            del user_list[pos-3: pos]
+            #print("Final list : {}".format(user_list))
+            coplogic=user_list
+            print(step)
+            #print(coplogic)
+            step+=1
+        return coplogic
 
     def convert_crossover(self,strategy):
         operators=[' + ',' - ',' > ',' < ',' = ',' and ',' or ',' ( ',' ) ' , ' crossover ',' crossunder ']
@@ -53,6 +102,7 @@ class Strategy:
             proc_strat['EXIT']['LOGIC']=proc_exit
             proc_strat['EXIT']['INDICATORS']=proc_exit_indicators
         return proc_strat
+    
 
     def backtest_strategy(self, data, start_date, end_date):
         try:
@@ -63,6 +113,7 @@ class Strategy:
             self.sell_move=0
             self.transaction_monitor = False
 
+            
             dict_portfolio = {'cash_wallet': [] ,
                         'stock_wallet': [] ,
                         'port_value': [] ,
@@ -76,7 +127,8 @@ class Strategy:
                         'trade_return':[],
                         'move_info':[]}
 
-            indicators_entry = calculateIndicators(data, self.indicators_entry)
+            
+            indicators_entry =  calculateIndicators(data, self.indicators_entry)
             indicators_exit = calculateIndicators(data, self.indicators_exit)
 
             security_stock_price= data['close'][0]
@@ -85,14 +137,14 @@ class Strategy:
 
             for day in range( len(data['close'])):
                 stock = Stock(data['close'][day], data['close_time'][day])
-                should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
-                should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
+                should_entry = self.eval_condition(self.logic_entry, self.logic_entry, indicators_entry, day)
+                should_exit = self.eval_condition(self.logic_exit, self.logic_exit, indicators_exit, day)
 
                 if stock.price > last_stock_price:
                     trailing_stop_price = stock.price * (1-float(self.trailing_stop)/100)
 
-                take_profit_price = security_stock_price * (1+ float(self.take_profit)/100)
-                stop_loss_price = security_stock_price * (1- float(self.stop_loss))
+                take_profit_price = security_stock_price * (1 + float(self.take_profit)/100)
+                stop_loss_price = security_stock_price * (1 - float(self.stop_loss))
 
 
                 if should_entry and not self.in_trade:
@@ -211,18 +263,21 @@ class Strategy:
         return dict_portfolio
     
     def buy(self, transaction_amount: float, stock: Stock):
-        trade_qty = int(transaction_amount/stock.price)
-        transaction_amount = trade_qty * stock.price #Met le vrai prix (on ne peut pas acheter des quarts d'actions)
-        if self.cash_wallet >= transaction_amount:
-            buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
-        elif self.cash_wallet < transaction_amount and self.cash_wallet > 1:
-            buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
-        else:
-            self.buy_move = 0
-            self.transaction_monitor = False
-            self.updatePortfolioValue()
-            trade_qty = 0
-            buy_result = False
+        try:
+            trade_qty = int(transaction_amount/stock.price)
+            transaction_amount = trade_qty * stock.price #Met le vrai prix (on ne peut pas acheter des quarts d'actions)
+            if self.cash_wallet >= transaction_amount:
+                buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
+            elif self.cash_wallet < transaction_amount and self.cash_wallet > 1:
+                buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
+            else:
+                self.buy_move = 0
+                self.transaction_monitor = False
+                self.updatePortfolioValue()
+                trade_qty = 0
+                buy_result = False
+        except Exception as e:
+            print("error in buy: ", e)
         return buy_result, trade_qty
     
     def validateBuy(self, transaction_amount: float, trade_qty: int):
@@ -236,20 +291,23 @@ class Strategy:
         return True
     
     def sell(self, transaction_amount: float, stock: Stock):
-        trade_qty = int(transaction_amount/stock.price)
-        transaction_amount = trade_qty * stock.price
-        if self.stock_wallet >= transaction_amount:
-            sell_result = self.validateSell(transaction_amount,trade_qty = trade_qty)
+        try:
+            trade_qty = int(transaction_amount/stock.price)
+            transaction_amount = trade_qty * stock.price
+            if self.stock_wallet >= transaction_amount:
+                sell_result = self.validateSell(transaction_amount,trade_qty = trade_qty)
 
-        elif self.stock_wallet < transaction_amount and self.stock_wallet > 1:
-            sell_result = self.validateSell(transaction_amount, trade_qty = trade_qty)
-        
-        else:
-            self.sell_move = 0
-            self.transaction_monitor = False
-            self.updatePortfolioValue()
-            sell_result = False
-            trade_qty = 0
+            elif self.stock_wallet < transaction_amount and self.stock_wallet > 1:
+                sell_result = self.validateSell(transaction_amount, trade_qty = trade_qty)
+            
+            else:
+                self.sell_move = 0
+                self.transaction_monitor = False
+                self.updatePortfolioValue()
+                sell_result = False
+                trade_qty = 0
+        except Exception as e:
+            print("error in sell: ", e)
         return sell_result, trade_qty
 
 

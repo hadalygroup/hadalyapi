@@ -5,9 +5,7 @@ import datetime as dt
 import numpy as np
 import yfinance as yf
 from binance.client import Client
-from datetime import datetime, date, timedelta
-import time
-import traceback
+from datetime import datetime, timedelta
 import ccxt
 import cryptocompare
 

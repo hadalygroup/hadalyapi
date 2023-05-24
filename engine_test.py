@@ -3,7 +3,8 @@ from engine.engine import Hadaly_Engine
 import json
 
 
-strategyString = """{
+strategyString = """
+{
 	"EXIT": {
 		"LOGIC": [{
 			"RSI": {
@@ -14,8 +15,8 @@ strategyString = """{
 		}, {
 			" > ": {}
 		}, {
-			"100": {
-				"num": "100"
+			"50": {
+				"num": "50"
 			}
 		}],
 		"EXPOSURE": "1000",
@@ -29,31 +30,16 @@ strategyString = """{
 	},
 	"ENTRY": {
 		"LOGIC": [{
-			"MIDPRICE": {
-				"time": "0",
-				"timeperiod": "14"
-			}
-		}, {
-			" crossover ": {}
-		}, {
-			"MIDPOINT": {
-				"time": "0",
-				"source": "close",
-				"timeperiod": "14"
-			}
-		}, {
-			" and ": {}
-		}, {
 			"RSI": {
 				"time": "0",
 				"source": "close",
 				"timeperiod": "14"
 			}
 		}, {
-			" < ": {}
+			" > ": {}
 		}, {
-			"40": {
-				"num": "40"
+			"45": {
+				"num": "45"
 			}
 		}],
 		"EXPOSURE": "1000",
@@ -96,10 +82,15 @@ strategyString = """{
 strategy = Strategy(strategyString)
 # jsons =json.loads(strategyString)
 # a = []
-# for i in jsons['ENTRY']['INDICATORS']:
+# for i in jsons["ENTRY"]["INDICATORS"]:
 #     for key in i.keys():
 #         a.append(key)
     
 # print(a)
 
-engine = Hadaly_Engine(strategy,"AAPL", "2022-05-16", "2022-09-01","1d")
+engine = Hadaly_Engine(strategy,"AAPL", "2022-09-02", "2023-03-07","1d")
+stockmoney = engine.simulation['stock_wallet']
+cashmoney = engine.simulation['cash_wallet']
+portvalue = engine.simulation['port_value']
+
+print(engine.simulation)

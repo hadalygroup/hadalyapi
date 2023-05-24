@@ -16,14 +16,18 @@ class Strategy:
 
         self.logic_entry = self.strategy['ENTRY']['LOGIC']
         self.logic_exit = self.strategy['EXIT']['LOGIC']
+
         self.indicators_entry = self.setIndicators(self.strategy['ENTRY']['INDICATORS'])
         self.indicators_exit = self.setIndicators(self.strategy['EXIT']['INDICATORS'])
+
         self.exposure_entry = float(self.strategy['ENTRY']['EXPOSURE'])
         self.exposure_exit = float(self.strategy['EXIT']['EXPOSURE'])
 
         self.stop_loss = 0
         self.take_profit = 0
         self.trailing_stop = 0
+
+        self.stock_qty = 0
 
         if self.strategy["SECURITY"]['stop_loss']['status']==1:
             self.stop_loss = float(self.strategy["SECURITY"]['stop_loss']['value'])
@@ -86,6 +90,9 @@ class Strategy:
             #print(coplogic)
             step+=1
         return coplogic
+    def updateStockWallet(self, stockPrice):
+        self.stock_wallet = stockPrice * self.stock_qty
+        return
 
     def convert_crossover(self,strategy):
         operators=[' + ',' - ',' > ',' < ',' = ',' and ',' or ',' ( ',' ) ' , ' crossover ',' crossunder ']
@@ -126,19 +133,20 @@ class Strategy:
                         'log':[],
                         'trade_return':[],
                         'move_info':[]}
-
+            
             
             indicators_entry =  calculateIndicators(data, self.indicators_entry)
             indicators_exit = calculateIndicators(data, self.indicators_exit)
-
             security_stock_price= data['close'][0]
             trailing_stop_price = security_stock_price * (1 - float(self.trailing_stop)/ 100)
             last_stock_price=0
 
             for day in range( len(data['close'])):
                 stock = Stock(data['close'][day], data['close_time'][day])
-                should_entry = self.eval_condition(self.logic_entry, self.logic_entry, indicators_entry, day)
-                should_exit = self.eval_condition(self.logic_exit, self.logic_exit, indicators_exit, day)
+                self.updateStockWallet(stock.price)
+                self.updatePortfolioValue()
+                should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
+                should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
 
                 if stock.price > last_stock_price:
                     trailing_stop_price = stock.price * (1-float(self.trailing_stop)/100)
@@ -158,6 +166,7 @@ class Strategy:
                     else:
                         log = 'timestamp: ' + str(stock.close_time) + '------no cash available to buy------- cash available: ' + \
                             str(self.cash_wallet) + '-- trans_amount: ' + str(n_stocks_bought)
+                        dict_portfolio['log'].append(log)
                     dict_portfolio['move_info'].append(np.nan)
                 
                 elif stock.price > take_profit_price and self.take_profit != 0 and self.in_trade:
@@ -201,9 +210,9 @@ class Strategy:
                         dict_portfolio['move_info'].append(np.nan)
 
                 elif stock.price < trailing_stop_price and self.trailing_stop != 0 and self.in_trade:
-                    sold, n_stocks_sold=self.sell(self.exposure_exit)
+                    sold, n_stocks_sold=self.sell(self.exposure_exit, stock=stock)
                     if sold:
-                        security_stock_price=self.stock_price
+                        security_stock_price=stock.price
                         log='timestamp: '+ str(stock.close_time)+'--'+'trailing_stop exit at price: '+str(trailing_stop_price)
                         self.in_trade = False
                         trade_return=(stock.price - memory_buy_price) * 100 / memory_buy_price
@@ -220,8 +229,10 @@ class Strategy:
                     self.updatePortfolioValue()
                     log='timestamp: '+ str(stock.close_time)+'--'+'no transaction: business decision'
                     dict_portfolio['move_info'].append(np.nan)
+                
+                dict_portfolio['log'].append(log)
                 last_stock_price = stock.price  
-                dict_portfolio = self.update_portfolio_info(dict_portfolio)
+                dict_portfolio = self.update_portfolio_info(dict_portfolio, stock)
                 dict_portfolio = self.addPerformance(dict_portfolio,start_date, end_date)
 
         except Exception as e:
@@ -229,10 +240,10 @@ class Strategy:
         return dict_portfolio
 
     def addPerformance(self, portfolio, start_date, end_date):
-        start_date_index = self.find_date_index(start_date, portfolio=portfolio)
-        end_date_index = self.find_date_index(end_date, portfolio=portfolio)
         stock_prices = portfolio['stock_price']
         portfolio_values = portfolio['port_value']
+        end_date_index = len(stock_prices)-1
+        start_date_index = 0
         market_performance = (stock_prices[end_date_index] - stock_prices[start_date_index]) * 100 / stock_prices[start_date_index]
         strat_performance = (portfolio_values[end_date_index] - portfolio_values[start_date_index]) * 100 / portfolio_values[start_date_index]
         portfolio['market_perf'] = market_performance
@@ -244,22 +255,17 @@ class Strategy:
         else:
             portfolio['average_trade_ratio'] = 0
         return portfolio
-
-    def find_date_index(self, date, portfolio):
-        date = datetime.strftime(date, "%Y-%m-%d")
-        date_index = portfolio['close_time'].index(date)
-        return date_index
     
-    def update_portfolio_info(self,dict_portfolio):
+    def update_portfolio_info(self,dict_portfolio, stock):
         dict_portfolio['cash_wallet'].append(self.cash_wallet)
         dict_portfolio['stock_wallet'].append(self.stock_wallet)
-        dict_portfolio['port_value'].append(self.port_value)
+        dict_portfolio['port_value'].append(self.portfolio_value)
         dict_portfolio['stock_qty'].append(self.stock_qty)
-        dict_portfolio['stock_price'].append(self.stock_price)
+        dict_portfolio['stock_price'].append(stock.price)
         dict_portfolio['buy_move'].append(self.buy_move)
         dict_portfolio['sell_move'].append(self.sell_move)
         dict_portfolio['transaction_monitor'].append(self.transaction_monitor)
-        dict_portfolio['close_time'].append(self.close_time)
+        dict_portfolio['close_time'].append(stock.close_time)
         return dict_portfolio
     
     def buy(self, transaction_amount: float, stock: Stock):
@@ -269,6 +275,8 @@ class Strategy:
             if self.cash_wallet >= transaction_amount:
                 buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
             elif self.cash_wallet < transaction_amount and self.cash_wallet > 1:
+                trade_qty = int(self.cash_wallet / stock.price)
+                transaction_amount = trade_qty * stock.price
                 buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
             else:
                 self.buy_move = 0
@@ -293,6 +301,8 @@ class Strategy:
     def sell(self, transaction_amount: float, stock: Stock):
         try:
             trade_qty = int(transaction_amount/stock.price)
+            if trade_qty > self.stock_qty:
+                trade_qty = self.stock_qty
             transaction_amount = trade_qty * stock.price
             if self.stock_wallet >= transaction_amount:
                 sell_result = self.validateSell(transaction_amount,trade_qty = trade_qty)
@@ -331,16 +341,13 @@ class Strategy:
     def translate_condition(self, logic, logic_indicators, indicators_value, index):
         condition_list = []
         indicator_index = 0
-
         for i in logic:
-            if i in logic_indicators:
-                if list(i.values())[0].get('num'):
-                    condition_list.append(list(i.values())[0].get('num'))
-                else:
-                    condition_list.append(indicators_value['indicators'][i][index])
+            key = list(i.keys())[0]
+            if key in logic_indicators:
+                condition_list.append(indicators_value[indicator_index][index])
                 indicator_index += 1
             else:
-                condition_list.append(list(i.keys())[0])
+                condition_list.append(key)
         
         condition_string = ''.join(str(e) for e in condition_list)
         return condition_string

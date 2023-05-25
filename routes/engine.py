@@ -5,4 +5,4 @@ router = APIRouter()
 
 @router.post("/engine/{strategy_id}")
 async def run_engine(indicators: Request):
-    pass
+    return {"This is were the engine will eventually run !"}

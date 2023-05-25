@@ -1,7 +1,6 @@
 import json
 import numpy as np
 from util.calculateIndicators import calculateIndicators
-from datetime import datetime
 from engine.Stock import Stock
 
 class Strategy:
@@ -17,8 +16,8 @@ class Strategy:
         self.logic_entry = self.strategy['ENTRY']['LOGIC']
         self.logic_exit = self.strategy['EXIT']['LOGIC']
 
-        self.indicators_entry = self.setIndicators(self.strategy['ENTRY']['INDICATORS'])
-        self.indicators_exit = self.setIndicators(self.strategy['EXIT']['INDICATORS'])
+        self.indicators_entry = self.strategy['ENTRY']['INDICATORS']
+        self.indicators_exit = self.strategy['EXIT']['INDICATORS']
 
         self.exposure_entry = float(self.strategy['ENTRY']['EXPOSURE'])
         self.exposure_exit = float(self.strategy['EXIT']['EXPOSURE'])
@@ -78,7 +77,7 @@ class Strategy:
             dic2post[list(dic2post.keys())[0]]=dic3post
 
             downcrossup_trad=[{' ( ': {}},dic2pre, {' < ': {}}, dic2post,{' ) ': {}},{' and ': {}}, {' ( ': {}},dicc['pre_cross'], {' > ': {}}, dicc['post_cross'],{' ) ': {}}]
-
+            
             user_list = coplogic
             count = 11
             for i in range(count):
@@ -86,7 +85,7 @@ class Strategy:
             del user_list[pos-3: pos]
             #print("Final list : {}".format(user_list))
             coplogic=user_list
-            print(step)
+
             #print(coplogic)
             step+=1
         return coplogic
@@ -274,7 +273,7 @@ class Strategy:
             transaction_amount = trade_qty * stock.price #Met le vrai prix (on ne peut pas acheter des quarts d'actions)
             if self.cash_wallet >= transaction_amount:
                 buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
-            elif self.cash_wallet < transaction_amount and self.cash_wallet > 1:
+            elif self.cash_wallet < transaction_amount and self.cash_wallet > stock.price:
                 trade_qty = int(self.cash_wallet / stock.price)
                 transaction_amount = trade_qty * stock.price
                 buy_result = self.validateBuy(transaction_amount= transaction_amount, trade_qty= trade_qty)
@@ -344,6 +343,11 @@ class Strategy:
         for i in logic:
             key = list(i.keys())[0]
             if key in logic_indicators:
+                # if 'time' in i.get(list(i.keys())[0],{}) and index !=:
+                #     time_value = i[list(i.keys())[0]]['time']
+                #     time_value = int(time_value)
+                #     condition_list.append(indicators_value[indicator_index][index-time_value])
+                #     continue
                 condition_list.append(indicators_value[indicator_index][index])
                 indicator_index += 1
             else:

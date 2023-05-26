@@ -27,7 +27,7 @@ class Strategy:
         self.trailing_stop = 0
 
         self.stock_qty = 0
-
+        
         if self.strategy["SECURITY"]['stop_loss']['status']==1:
             self.stop_loss = float(self.strategy["SECURITY"]['stop_loss']['value'])
 
@@ -132,10 +132,11 @@ class Strategy:
                         'log':[],
                         'trade_return':[],
                         'move_info':[]}
-            
-            
+        
             indicators_entry =  calculateIndicators(data, self.indicators_entry)
+            print("first calculation")
             indicators_exit = calculateIndicators(data, self.indicators_exit)
+            print("second calculation")
             security_stock_price= data['close'][0]
             trailing_stop_price = security_stock_price * (1 - float(self.trailing_stop)/ 100)
             last_stock_price=0
@@ -146,7 +147,7 @@ class Strategy:
                 self.updatePortfolioValue()
                 should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
                 should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
-
+                
                 if stock.price > last_stock_price:
                     trailing_stop_price = stock.price * (1-float(self.trailing_stop)/100)
 

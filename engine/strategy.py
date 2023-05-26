@@ -160,11 +160,11 @@ class Strategy:
                         self.in_trade = True
                         trailing_stop_price = stock.price * (1 - self.trailing_stop/100)
                         memory_buy_price = stock.price
+                        dict_portfolio['move_info'].append("Buy")
                     else:
                         log = 'timestamp: ' + str(stock.close_time) + '------no cash available to buy------- cash available: ' + \
                             str(self.cash_wallet) + '-- trans_amount: ' + str(n_stocks_bought)
                         dict_portfolio['log'].append(log)
-                    dict_portfolio['move_info'].append(np.nan)
                 
                 elif stock.price > take_profit_price and self.take_profit != 0 and self.in_trade:
                     sold, n_stocks_sold = self.sell(self.exposure_exit, stock= stock)

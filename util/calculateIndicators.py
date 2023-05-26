@@ -9,15 +9,15 @@ def calculateIndicator(stock_data, indicator):
         value = indicator_function(stock_data)
     elif isinstance(indicator, dict):
         try: 
-            optional_params = getOptionnalParams(indicator)
             indicator_symbol = getDictKey(indicator)
+            if indicator_symbol.isdigit():
+                return intIndicator(indicator_symbol, len(stock_data['close']))
+            optional_params = getOptionnalParams(indicator)
             indicator_function = abstract.Function(indicator_symbol)
         except ValueError:
             raise ValueError("Unsopported indicator : ", indicator)
             print("Indicator will not be calculated and will be set to 0")
             return 0
-        if "num" in indicator[indicator_symbol]:
-            return intIndicator(indicator_symbol, len(stock_data['close']))
         #indicator is a dict that has the following form:
         #{'RSI': {'time': '0', 'source': 'close', 'timeperiod': '14'}}
         #we use the following for loop to unpack the indicator_symbol and its params even though we do not iterate over it multiple times

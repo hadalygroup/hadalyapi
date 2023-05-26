@@ -32,3 +32,6 @@ engine = Hadaly_Engine(strategy,"AAPL", "2022-01-02", "2022-08-07","1d")
 stockmoney = engine.simulation["stock_wallet"]
 cashmoney = engine.simulation["cash_wallet"]
 portvalue = engine.simulation["port_value"]
+
+
+print(engine.simulation)

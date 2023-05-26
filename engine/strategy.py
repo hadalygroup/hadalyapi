@@ -134,9 +134,7 @@ class Strategy:
                         'move_info':[]}
         
             indicators_entry =  calculateIndicators(data, self.indicators_entry)
-            print("first calculation")
             indicators_exit = calculateIndicators(data, self.indicators_exit)
-            print("second calculation")
             security_stock_price= data['close'][0]
             trailing_stop_price = security_stock_price * (1 - float(self.trailing_stop)/ 100)
             last_stock_price=0
@@ -147,7 +145,6 @@ class Strategy:
                 self.updatePortfolioValue()
                 should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
                 should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
-                
                 if stock.price > last_stock_price:
                     trailing_stop_price = stock.price * (1-float(self.trailing_stop)/100)
 
@@ -342,13 +339,9 @@ class Strategy:
         condition_list = []
         indicator_index = 0
         for i in logic:
+            #print(i)
             key = list(i.keys())[0]
-            if key in logic_indicators:
-                # if 'time' in i.get(list(i.keys())[0],{}) and index !=:
-                #     time_value = i[list(i.keys())[0]]['time']
-                #     time_value = int(time_value)
-                #     condition_list.append(indicators_value[indicator_index][index-time_value])
-                #     continue
+            if i in logic_indicators:
                 condition_list.append(indicators_value[indicator_index][index])
                 indicator_index += 1
             else:

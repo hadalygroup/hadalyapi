@@ -8,7 +8,7 @@ import json
 
 router = APIRouter()
 
-@router.post("/engine/")
+@router.post("/engine")
 async def run_engine(req: Strategy_Request):
     try:
         strategy = Strategy(req.strategy)

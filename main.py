@@ -17,6 +17,7 @@ from routes.historic import router as historic_router
 from routes.cached import router as cache_router
 from routes.indicators import router as indicator_router
 from routes.engine import router as engine_router
+from routes.yperformance import router as year_router
 
 from config import settings
 
@@ -41,6 +42,7 @@ app.include_router(historic_router)
 app.include_router(cache_router)
 app.include_router(indicator_router)
 app.include_router(engine_router)
+app.include_router(year_router)
 
 
 

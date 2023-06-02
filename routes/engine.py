@@ -12,9 +12,9 @@ router = APIRouter()
 async def run_engine(req: Strategy_Request):
     try:
         strategy = Strategy(req.strategy)
-        start_date = "2020-01-01"
+        start_date = req.start_date
         yesterday = datetime.now().date() - timedelta(days=1)
-        end_date = yesterday.strftime("%Y-%m-%d")
+        end_date = req.end_date
         engine = Hadaly_Engine(strategy, req.stock, start_date, end_date,"1d")
         res = json.dumps(engine.simulation)
     except Exception as e:

@@ -6,9 +6,9 @@ import datetime
 
 router = APIRouter()
 
-def calculateSPXReturn():
+def calculateGSPCReturn(time: int):
     end_date = datetime.date.today()
-    start_date = end_date - datetime.timedelta(days=365)
+    start_date = end_date - datetime.timedelta(days=time)
 
     sp500_data = yf.download('^GSPC', start=start_date, end=end_date, progress=False)
     sp500_return = (sp500_data['Close'][-1] - sp500_data['Close'][0]) / sp500_data['Close'][0] * 100
@@ -18,8 +18,7 @@ def calculateSPXReturn():
 # /yperformance?symbol=aapl
 async def historic():
     try:
-        sp500_return = calculateSPXReturn()
-        res = {"GSPC": sp500_return}
+        res = {"1y": calculateGSPCReturn(365), "3m":calculateGSPCReturn(90),"1w": calculateGSPCReturn(7)}
         res = json.dumps(res)
     except Exception as e:
         res = 'error :' + str(e)

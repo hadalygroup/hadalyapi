@@ -4,12 +4,12 @@ from util.calculateIndicators import calculateIndicators
 from engine.Stock import Stock
 
 class Strategy:
-    def __init__(self, strategyJson, cash_wallet:int = 1000, stock_wallet:int = 0):
+    def __init__(self, strategyJson, cash_wallet:int = None, stock_wallet:int = None):
         strategy = json.loads(strategyJson)
         
         self.cash_wallet = cash_wallet
         self.stock_wallet = stock_wallet
-        self.updatePortfolioValue()
+        #self.updatePortfolioValue()
         
         self.strategy = self.convert_crossover(strategy)
 
@@ -111,6 +111,8 @@ class Strategy:
     
 
     def backtest_strategy(self, data, start_date, end_date):
+        if self.cash_wallet is None or self.stock_wallet is None:
+            self.setMoney(data['close'][0])
         try:
             self.data = data
             self.in_trade = False
@@ -349,3 +351,8 @@ class Strategy:
         
         condition_string = ''.join(str(e) for e in condition_list)
         return condition_string
+    
+    def setMoney(self, money_cash: int, money_stock: int = 0):
+        self.cash_wallet = money_cash * 1.1
+        self.stock_wallet = money_stock
+        self.updatePortfolioValue()

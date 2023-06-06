@@ -5,3 +5,4 @@ class Strategy_Request(BaseModel):
     stock: str
     start_date: str
     end_date: str
+    money: int = 1000

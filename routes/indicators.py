@@ -5,8 +5,7 @@ from fastapi import APIRouter
 from util.market_data import historical_data_gmd
 from models.Indicator_request import Indicator_Request as Request
 from util.calculateIndicators import calculateIndicators
-
-from talib import abstract
+import json
 import numpy as np
 
 router = APIRouter()
@@ -32,13 +31,20 @@ async def getIndicators(indicators: Request):
     
     try:
         indicators_list = indicators.indicators
-     
+        for i in range(len(indicators_list)):
+            if "{" in indicators_list[i]:
+                indicators_list[i] = json.loads(indicators_list[i])
         stock_data = historical_data_gmd(STOCK_ID=indicators.symbol, START_DATE=indicators.start_date, END_DATE=indicators.end_date, TIME_INTERVAL=indicators.interval)
 
         indicators_value = calculateIndicators(stock_data, indicators_list)
+    
 
+        print(indicators_value)
         for i in range(len(indicators_value)):
+            print("here")
             res[indicators_list[i]] = indicators_value[i]
+            print("here2")
+        print(res)
 
         res = {"dates": stock_data['close'].tolist(), "indicators": res}
         res = json.dumps(res)

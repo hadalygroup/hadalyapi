@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/engine")
 async def run_engine(req: Strategy_Request):
     try:
-        strategy = Strategy(req.strategy)
+        strategy = Strategy(req.strategy, cash_wallet=req.money)
         start_date = req.start_date
         yesterday = datetime.now().date() - timedelta(days=1)
         end_date = req.end_date

@@ -61,7 +61,6 @@ def calculateIndicators(stocks_data,indicators):
         if np.any(indicator_value == None):
             indicators_list.append(indicator)
             continue
-        
         if not isinstance(indicator_value, np.ndarray):
             for i in range(len(indicator_value)):
                 indicator_value[i] = indicator_value[i].tolist()

@@ -111,7 +111,7 @@ class Strategy:
     
 
     def backtest_strategy(self, data, start_date, end_date):
-        if self.cash_wallet is None or self.stock_wallet is None:
+        if self.cash_wallet is None: #or stock_wallet is None
             self.setMoney(data['close'][0])
         try:
             self.data = data

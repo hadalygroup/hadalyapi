@@ -20,18 +20,17 @@ def get_portfolio_return(stock_list, n_stocks):
         performance[i] = calculate_return(initial_value, final_value)
     return performance
 
-def get_returns(stock_symbol):
+def get_returns(stock_symbol, time):
     today = datetime.date.today()
     end_date = today.strftime("%Y-%m-%d")
     performance = []
-
-    for i in [7, 90, 365]:
-        start_date = today - datetime.timedelta(days=i)
-        start_date = start_date.strftime("%Y-%m-%d")
-        data = historical_data_gmd(stock_symbol,start_date, end_date, "1d")
-        starting_price = data['close'][0]
-        final_price = data['close'][-1]
-        performance = calculate_return(starting_price, final_price)
+    
+    start_date = today - datetime.timedelta(days=time)
+    start_date = start_date.strftime("%Y-%m-%d")
+    data = historical_data_gmd(stock_symbol,start_date, end_date, "1d")
+    starting_price = data['close'][0]
+    final_price = data['close'][-1]
+    performance = calculate_return(starting_price, final_price)
     return performance #[7d,3m,1y] list is returned
 
 def review_stock_performance(stock_list, n_stocks):
@@ -53,8 +52,33 @@ def review_stock_performance(stock_list, n_stocks):
 
 def benchmark_comparison(stock_list, n_stocks):
     performances = get_portfolio_return(stock_list, n_stocks)
-    performance_1w = performances[0]
-    performance_3m = performances[1]
     performance_1y = performances[2]
-    for i in [7, 90, 365]:
-        sp500(i)
+    sp_500 = sp500(365)
+    first_word = "Unfortunately"
+    if performance_1y > sp_500:
+        first_word = "Congratulations"
+    benchmark_comparison_prompt = f"""You are a financial advisor.
+    Write a short sentence to analyse weither my portfolio, which has had a {performance_1y}% return, has beaten the S&P500, which has had a {sp_500}% return in the past year. 
+    Your first word has to be {first_word}.
+    """
+    return ask_GPT(benchmark_comparison_prompt)
+
+def stock_performance(stock_list):
+    stocks_performance = []
+    for ticker in stock_list:
+        stocks_performance.append(get_returns(ticker, 365))
+    individual_stock_performance_prompt = f"""Act as a financial advisor.
+    These are the returns that some stocks made in the past year: {stocks_performance}
+    For comparison, {sp500(365)} was the performance of the S&P500 index.
+    Which stocks have been the best performers?
+    Your response will be something like "x and y were the best performers, while z was the worst performer"
+    """
+    return ask_GPT(individual_stock_performance_prompt)
+    
+def portfolio_performance(stock_list, n_stocks):
+    performance_prompt = f"""
+    resume the following paragraphs, without losing any information, in a single one under 200words.
+    {review_stock_performance(stock_list, n_stocks)}
+    {stock_performance(stock_list)}
+    """
+    return ask_GPT(performance_prompt)

@@ -1,12 +1,4 @@
 import openai
-from dotenv import dotenv_values
-
-config = dotenv_values(".env")
-key = config.openai_key
-openai.organization = config.openai_org
-
-openai.api_key = key
-models = openai.Model.list()
 
 def ask_GPT(question: str):
     try:

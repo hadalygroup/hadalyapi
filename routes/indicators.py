@@ -16,8 +16,14 @@ Function name: get_indicators
 
 Description: Retrives data returns if the indicators have been found
 
-Inputs
-    indicator: type is Indicators => contains all the data needed
+Input:
+    {
+        "end_date": "2023-6-5",
+        "indicators": ["RSI",{"indicator": "MIDPRICE", "params": {"time": 13}, "id":"ab"}],
+        "interval": "1d",
+        "start_date": "2022-6-5",
+        "symbol": "AAPL"
+    }
     
 Output:
     Dictionnary where key = indicator name and value is a dictionnary corresponding to what was calculated by calculate_indicator

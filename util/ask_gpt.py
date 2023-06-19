@@ -1,7 +1,9 @@
 import openai
+from dotenv import dotenv_values
 
-key="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"
-openai.organization = "org-XaIRMUIT9Nc2W5prV7JxAZr3"
+config = dotenv_values(".env")
+key = config.openai_key
+openai.organization = config.openai_org
 
 openai.api_key = key
 models = openai.Model.list()

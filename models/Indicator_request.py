@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 
 class Indicator_Request(BaseModel):
-    indicators: List[str]
+    indicators: List[Union[dict, str]]
     symbol: str
     start_date: str
     end_date: str

@@ -9,7 +9,9 @@ router = APIRouter()
 @router.post("/reports")
 async def getIndicators(req: report_request):
     res = {}
-    
+    portfolio = {}
+    for index, action in enumerate(req.stocks):
+        portfolio[action] = req.n_stocks[index]
     try:
         pass
     except Exception as e:

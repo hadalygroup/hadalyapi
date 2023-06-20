@@ -2,11 +2,10 @@ import json
 import numpy as np
 from util.calculateIndicators import calculateIndicators
 from engine.Stock import Stock
+import copy
 
 class Strategy:
-    def __init__(self, strategyJson, cash_wallet:int = None, stock_wallet:int = None):
-        strategy = json.loads(strategyJson)
-        
+    def __init__(self, strategy, cash_wallet:int = None, stock_wallet:int = None):
         self.cash_wallet = cash_wallet
         self.stock_wallet = stock_wallet
         #self.updatePortfolioValue()
@@ -15,9 +14,11 @@ class Strategy:
 
         self.logic_entry = self.strategy['ENTRY']['LOGIC']
         self.logic_exit = self.strategy['EXIT']['LOGIC']
-
-        self.indicators_entry = self.strategy['ENTRY']['INDICATORS']
-        self.indicators_exit = self.strategy['EXIT']['INDICATORS']
+        
+        self.indicators_entry = self.set_Indicators((self.strategy['ENTRY']['LOGIC']))
+        
+        self.indicators_exit = self.set_Indicators((self.strategy['EXIT']['LOGIC']))
+    
 
         self.exposure_entry = float(self.strategy['ENTRY']['EXPOSURE'])
         self.exposure_exit = float(self.strategy['EXIT']['EXPOSURE'])
@@ -52,32 +53,31 @@ class Strategy:
     def convert_cross_part(self,logic):
         coplogic=logic.copy()
         step=0
-        while {' crossover ': {}} in coplogic:
+        while {'crossover': {}} in coplogic:
             compt=0
             for i in coplogic:
-                if list(i.keys())[0]==' crossover ':
+                if list(i.keys())[0]=='crossover':
                     pre_cross=coplogic[compt-1]
                     post_cross=coplogic[compt+1]
                     post_cross_pos=compt+1
                 compt+=1
             dicc= {'pre_cross':pre_cross,'post_cross':post_cross,'post_cross_pos':post_cross_pos}
 
-            newd=dicc.copy()
-
+            newd=copy.deepcopy(dicc)
             pos=dicc['post_cross_pos']+1
 
-            dic2pre=newd['pre_cross'].copy() #
-            dic3pre=dic2pre[list(dic2pre.keys())[0]].copy()
-            dic3pre['time']=1
-            dic2pre[list(dic2pre.keys())[0]]=dic3pre
+            dic2pre=newd['pre_cross'].copy()
+            dic3pre=dic2pre.copy()
+            dic3pre['params']['time']=1
+            dic2pre=dic3pre
 
             dic2post=newd['post_cross'].copy() #
-            dic3post=dic2post[list(dic2post.keys())[0]].copy()
-            dic3post['time']=1
-            dic2post[list(dic2post.keys())[0]]=dic3post
+            dic3post=dic2post.copy()
+            dic3post['params']['time']=1
+            dic2post=dic3post
 
-            downcrossup_trad=[{' ( ': {}},dic2pre, {' < ': {}}, dic2post,{' ) ': {}},{' and ': {}}, {' ( ': {}},dicc['pre_cross'], {' > ': {}}, dicc['post_cross'],{' ) ': {}}]
-            
+            downcrossup_trad=[{' ( ': {}},dic2pre, {' > ': {}}, dic2post,{' ) ': {}},{' and ': {}}, {' ( ': {}},dicc['pre_cross'], {' < ': {}}, dicc['post_cross'],{' ) ': {}}]
+            print(downcrossup_trad)
             user_list = coplogic
             count = 11
             for i in range(count):
@@ -85,24 +85,29 @@ class Strategy:
             del user_list[pos-3: pos]
             #print("Final list : {}".format(user_list))
             coplogic=user_list
-
             #print(coplogic)
             step+=1
         return coplogic
     def updateStockWallet(self, stockPrice):
         self.stock_wallet = stockPrice * self.stock_qty
         return
+    
+    def set_Indicators(self, logic):
+        indicators = []
+        for i in logic:
+            if "indicator" in i:
+                indicators.append(i)
+        return indicators
 
     def convert_crossover(self,strategy):
         operators=[' + ',' - ',' > ',' < ',' = ',' and ',' or ',' ( ',' ) ' , ' crossover ',' crossunder ']
         proc_strat=strategy.copy()
-
-        if ' crossover ' in [list(h.keys())[0] for h in strategy['ENTRY']['LOGIC']]:
+        if 'crossover' in [list(h.keys())[0] for h in strategy['ENTRY']['LOGIC']]:
             proc_entry=self.convert_cross_part(proc_strat['ENTRY']['LOGIC'])
             proc_entry_indicators=[x for x in proc_entry if list(x.keys())[0] not in operators ]
             proc_strat['ENTRY']['LOGIC']=proc_entry
             proc_strat['ENTRY']['INDICATORS']=proc_entry_indicators
-        if ' crossover ' in [list(h.keys())[0] for h in strategy['EXIT']['LOGIC']]:
+        if 'crossover' in [list(h.keys())[0] for h in strategy['EXIT']['LOGIC']]:
             proc_exit=self.convert_cross_part(proc_strat['EXIT']['LOGIC'])
             proc_exit_indicators=[x for x in proc_exit if list(x.keys())[0] not in operators ]
             proc_strat['EXIT']['LOGIC']=proc_exit
@@ -134,17 +139,18 @@ class Strategy:
                         'log':[],
                         'trade_return':[],
                         'move_info':[]}
-        
             indicators_entry =  calculateIndicators(data, self.indicators_entry)
             indicators_exit = calculateIndicators(data, self.indicators_exit)
             security_stock_price= data['close'][0]
             trailing_stop_price = security_stock_price * (1 - float(self.trailing_stop)/ 100)
             last_stock_price=0
 
-            for day in range( len(data['close'])):
+
+            for day in range(len(data['close'])):
                 stock = Stock(data['close'][day], data['close_time'][day])
                 self.updateStockWallet(stock.price)
                 self.updatePortfolioValue()
+
                 should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
                 should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
                 if stock.price > last_stock_price:
@@ -339,15 +345,14 @@ class Strategy:
     
     def translate_condition(self, logic, logic_indicators, indicators_value, index):
         condition_list = []
-        indicator_index = 0
+        indicator_index = 0 
         for i in logic:
             #print(i)
-            key = list(i.keys())[0]
-            if i in logic_indicators:
+            if "indicator" in i:
                 condition_list.append(indicators_value[indicator_index][index])
                 indicator_index += 1
             else:
-                condition_list.append(key)
+                condition_list.append(list(i.keys())[0])
         
         condition_string = ''.join(str(e) for e in condition_list)
         return condition_string

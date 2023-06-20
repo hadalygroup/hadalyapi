@@ -5,7 +5,9 @@ import time
 import redis.asyncio as redis
 import uvicorn
 import openai
-from dotenv import dotenv_values
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
 
 from fastapi import Depends, FastAPI
 from fastapi_cache import FastAPICache
@@ -47,10 +49,11 @@ app.include_router(indicator_router)
 app.include_router(engine_router)
 app.include_router(year_router)
 
-config = dotenv_values(".env")
-key = config["openai_key"]
-print(key)
-openai.organization = config["openai_org"]
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+key = os.environ.get("openai_key")
+openai.organization = os.environ.get("openai_org")
 
 openai.api_key = key
 models = openai.Model.list()

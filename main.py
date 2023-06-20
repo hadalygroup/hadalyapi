@@ -4,6 +4,11 @@ import time
 
 import redis.asyncio as redis
 import uvicorn
+import openai
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
 from fastapi import Depends, FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
@@ -18,7 +23,6 @@ from routes.cached import router as cache_router
 from routes.indicators import router as indicator_router
 from routes.engine import router as engine_router
 from routes.yperformance import router as year_router
-from routes.gspc import router as gspc_router
 
 from config import settings
 
@@ -44,8 +48,15 @@ app.include_router(cache_router)
 app.include_router(indicator_router)
 app.include_router(engine_router)
 app.include_router(year_router)
-app.include_router(gspc_router)
 
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+key = os.environ.get("openai_key")
+openai.organization = os.environ.get("openai_org")
+
+openai.api_key = key
+models = openai.Model.list()
 
 
 

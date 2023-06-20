@@ -9,10 +9,10 @@ def calculateIndicator(stock_data, indicator):
         value = indicator_function(stock_data)
     elif isinstance(indicator, dict):
         try: 
-            indicator_symbol = getDictKey(indicator)
+            indicator_symbol = indicator["indicator"]
             if indicator_symbol.isdigit():
                 return intIndicator(indicator_symbol, len(stock_data['close']))
-            optional_params = getOptionnalParams(indicator)
+            optional_params = indicator["params"]
             indicator_function = abstract.Function(indicator_symbol)
         except ValueError:
             raise ValueError("Unsopported indicator : ", indicator)
@@ -21,16 +21,11 @@ def calculateIndicator(stock_data, indicator):
         #indicator is a dict that has the following form:
         #{'RSI': {'time': '0', 'source': 'close', 'timeperiod': '14'}}
         #we use the following for loop to unpack the indicator_symbol and its params even though we do not iterate over it multiple times
-        params = indicator[indicator_symbol]
-        for param, argument in params.items():
-            optional_params[param] = argument
         
-        params = convert(optional_params)
-        value = indicator_function(stock_data, **params)
-        if "time" in indicator[indicator_symbol]:
-            time_offset = int(indicator[indicator_symbol]["time"])
+        value = indicator_function(stock_data, **optional_params)
+        if "time" in optional_params:
+            time_offset = optional_params["time"]
             value = offset_list(value,time_offset)
-
     else:
         raise ValueError("Unsupported data type for indicator in calculateIndicator")
     return value
@@ -41,9 +36,7 @@ def intIndicator(intAsString, length):
     return value
 
 def getDictKey(dictionnary):
-    for key in dictionnary:
-        dictionnary=key
-    return dictionnary
+    return dictionnary.keys()[0]
 
 def convert(parameters):
     string_conversion = ""
@@ -61,7 +54,6 @@ def calculateIndicators(stocks_data,indicators):
         if np.any(indicator_value == None):
             indicators_list.append(indicator)
             continue
-        
         if not isinstance(indicator_value, np.ndarray):
             for i in range(len(indicator_value)):
                 indicator_value[i] = indicator_value[i].tolist()

@@ -53,10 +53,10 @@ class Strategy:
     def convert_cross_part(self,logic):
         coplogic=logic.copy()
         step=0
-        while {'crossover': {}} in coplogic:
+        while {'crossover': {}} or {{' crossover ': {}}} in coplogic:
             compt=0
             for i in coplogic:
-                if list(i.keys())[0]=='crossover':
+                if list(i.keys())[0]=='crossover' or list(i.keys())[0]==' crossover ':
                     pre_cross=coplogic[compt-1]
                     post_cross=coplogic[compt+1]
                     post_cross_pos=compt+1
@@ -102,12 +102,12 @@ class Strategy:
     def convert_crossover(self,strategy):
         operators=[' + ',' - ',' > ',' < ',' = ',' and ',' or ',' ( ',' ) ' , ' crossover ',' crossunder ']
         proc_strat=strategy.copy()
-        if 'crossover' in [list(h.keys())[0] for h in strategy['ENTRY']['LOGIC']]:
+        if 'crossover' in [list(h.keys())[0] for h in strategy['ENTRY']['LOGIC']] or ' crossover ' in [list(h.keys())[0] for h in strategy['ENTRY']['LOGIC']]:
             proc_entry=self.convert_cross_part(proc_strat['ENTRY']['LOGIC'])
             proc_entry_indicators=[x for x in proc_entry if list(x.keys())[0] not in operators ]
             proc_strat['ENTRY']['LOGIC']=proc_entry
             proc_strat['ENTRY']['INDICATORS']=proc_entry_indicators
-        if 'crossover' in [list(h.keys())[0] for h in strategy['EXIT']['LOGIC']]:
+        if 'crossover' in [list(h.keys())[0] for h in strategy['EXIT']['LOGIC']] or ' crossover ' in [list(h.keys())[0] for h in strategy['EXIT']['LOGIC']]:
             proc_exit=self.convert_cross_part(proc_strat['EXIT']['LOGIC'])
             proc_exit_indicators=[x for x in proc_exit if list(x.keys())[0] not in operators ]
             proc_strat['EXIT']['LOGIC']=proc_exit

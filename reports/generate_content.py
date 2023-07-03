@@ -4,4 +4,4 @@ from reports.sections.Performance import portfolio_performance #done
 
 from reports.sections.Events import get_upcomming_events
 def generate_report():
-    return get_upcomming_events()
+    pass

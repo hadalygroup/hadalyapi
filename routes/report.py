@@ -11,8 +11,7 @@ async def getIndicators(req: Request):
     res = {}
     
     try:
-        print(generate_report())
-        res["allo": generate_report()]
+        generate_report()
         res = json.dumps(res)
     except Exception as e:
         res = 'error :' + str(e)

@@ -11,7 +11,7 @@ def overview(portfolio_allocation):
 
 def review_investment_strategy(portfolio_allocation):
     investment_strategy_prompt = f"""Act as a financial advisor.
-    What type of portfolio is {portfolio_allocation}. The allocation is {portfolio_allocation} in percentage.
+    What type of portfolio is {list(portfolio_allocation.keys())}. The allocation is {portfolio_allocation} in percentage.
     Is it aiming for growth or income?
     Is it aiming for long or short term?
     Is it well diversified accross different sectors?

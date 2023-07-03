@@ -54,14 +54,11 @@ def benchmark_comparison(stock_list, n_stocks):
     performances = get_portfolio_return(stock_list, n_stocks)
     performance_1y = performances[2]
     sp_500 = sp500(365)
-    first_word = "Unfortunately"
-    if performance_1y > sp_500:
-        first_word = "Congratulations"
-    benchmark_comparison_prompt = f"""You are a financial advisor.
-    Write a short sentence to analyse weither my portfolio, which has had a {performance_1y}% return, has beaten the S&P500, which has had a {sp_500}% return in the past year. 
-    Your first word has to be {first_word}.
-    """
-    return ask_GPT(benchmark_comparison_prompt)
+    difference = performance_1y - sp_500
+    benchmark_result = f"Unfortunately, your portfolio did not beat the S&P500 by {difference}%"
+    if difference>0:
+        benchmark_result = f"Congratulations, your portfolio has beaten the S&P500 by {difference}%"
+    return benchmark_result
 
 def stock_performance(stock_list):
     stocks_performance = []

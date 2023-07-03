@@ -1,5 +1,4 @@
 import asyncio
-
 from fastapi import APIRouter
 from models.user import UserResponse
 from fastapi_cache.decorator import cache

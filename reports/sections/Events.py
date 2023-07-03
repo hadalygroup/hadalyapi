@@ -1,13 +1,14 @@
 import datetime
-from util.events import get_events
+from util.events import get_economic_calendar as get_events
 from util.ask_gpt import ask_GPT
+import ast
 
 def get_upcomming_events():
     today = datetime.date.today()
     next_week = today + datetime.timedelta(days=7)
     today = today.strftime('%Y-%m-%d')
     next_week = next_week.strftime('%Y-%m-%d')
-    upcoming_events = get_events(today,next_week)
+    upcoming_events = get_events(start_date=today,end_date=next_week)
     return upcoming_events['Event'].tolist()
 
 def get_past_events():
@@ -15,7 +16,7 @@ def get_past_events():
     last_week = today - datetime.timedelta(days=7)
     today = today.strftime('%Y-%m-%d')
     last_week = last_week.strftime('%Y-%m-%d')
-    upcoming_events = get_events(last_week, today)
+    upcoming_events = get_events(start_date=last_week,end_date=today)
     return upcoming_events['Event'].tolist()
 
 def review_past_events(portfolio_allocation):

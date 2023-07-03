@@ -1,23 +1,20 @@
 import json
+from reports.generate_content import generate_report
 from fastapi import APIRouter
-from models.Report_request import report_request
-import yfinance as yf
+from models.Report_request import report_request as Request
+
+
 router = APIRouter()
 
-@router.post("/reports")
-async def getIndicators(req: report_request):
+@router.post("/report")
+async def getIndicators(req: Request):
     res = {}
-    portfolio = {}
-
-    for index, action in enumerate(req.stocks):
-        portfolio[action] = req.n_stocks[index]
-    for stock, amount in portfolio.items():
-        stock = yf.ticker(stock)
-        pass
-
+    
     try:
-        pass
+        print(generate_report())
+        res["allo": generate_report()]
+        res = json.dumps(res)
     except Exception as e:
-        pass
+        res = 'error :' + str(e)
     return res
 

@@ -1,10 +1,8 @@
+import json
 from fastapi import APIRouter
-from models.Indicator_request import Indicator_Request as Request
 from models.Strategy_request import Strategy_Request
 from engine.strategy import Strategy
 from engine.engine import Hadaly_Engine
-from datetime import datetime, timedelta
-import json
 
 router = APIRouter()
 

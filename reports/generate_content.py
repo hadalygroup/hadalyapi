@@ -1,5 +1,7 @@
 from reports.sections.General_description import general_description #done
 from reports.sections.Performance import portfolio_performance #done
 #events missing
-def generate_report(portfolio_allocation):
-    pass
+
+from reports.sections.Events import get_upcomming_events
+def generate_report():
+    return get_upcomming_events()

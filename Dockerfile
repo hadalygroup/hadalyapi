@@ -14,7 +14,8 @@ RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
 RUN rm -R ta-lib ta-lib-0.4.0-src.tar.gz
 RUN cd ..
 RUN pip install TA-Lib
-#RUN pacman -S python-pip pango python-cffi python-pillow python-brotli python-zopfli
+RUN apt install python3-pip python3-cffi python3-brotli libpango-1.0-0 libpangoft2-1.0-0
+
 # Install Poetry & Setup app
 RUN poetry config virtualenvs.create false
 RUN poetry shell

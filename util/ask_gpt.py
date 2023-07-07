@@ -1,6 +1,14 @@
 import openai
 import time
-def ask_GPT(question: str):
+def ask_GPT(question: str) -> str:
+    """
+    Ask GPT something
+    
+    Input:
+        question -> What you're asking
+    Output:
+        chat_response -> its answer
+    """
     try:
         chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": question}])
         chat_response = chat_completion.choices[0].message.content

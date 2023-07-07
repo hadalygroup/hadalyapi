@@ -1,12 +1,9 @@
-import numpy as np
 import json
-
 from fastapi import APIRouter
 from util.market_data import historical_data_gmd
 from models.Indicator_request import Indicator_Request as Request
 from util.calculateIndicators import calculateIndicators
-import json
-import numpy as np
+
 
 router = APIRouter()
 

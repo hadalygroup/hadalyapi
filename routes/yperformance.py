@@ -1,5 +1,4 @@
 import json
-
 from fastapi import APIRouter
 from util.ask_gpt import ask_GPT
 

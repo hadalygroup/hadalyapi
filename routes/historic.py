@@ -1,6 +1,5 @@
 import numpy as np
 import json
-
 from fastapi import APIRouter
 from util.market_data import historical_data_gmd
 

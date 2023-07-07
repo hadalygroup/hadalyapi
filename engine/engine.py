@@ -6,7 +6,7 @@ class Hadaly_Engine:
         self.commander = strategy
         data = historical_data_gmd(stock_symbol, getPreviousDay(start_date), end_date, interval)
         self.simulation = self.simulate(data, start_date, end_date)
-    
+        
     def simulate(self, data, start_date, end_date):
         return self.commander.backtest_strategy(data, start_date, end_date)
         

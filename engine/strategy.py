@@ -77,7 +77,7 @@ class Strategy:
             dic2post=dic3post
 
             downcrossup_trad=[{' ( ': {}},dic2pre, {' > ': {}}, dic2post,{' ) ': {}},{' and ': {}}, {' ( ': {}},dicc['pre_cross'], {' < ': {}}, dicc['post_cross'],{' ) ': {}}]
-            print(downcrossup_trad)
+            
             user_list = coplogic
             count = 11
             for i in range(count):

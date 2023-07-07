@@ -13,6 +13,7 @@ async def run_engine(req: Strategy_Request):
         start_date = req.start_date
         end_date = req.end_date
         engine = Hadaly_Engine(strategy, req.stock, start_date, end_date,"1d")
+        print("Request received at /engine")
         res = json.dumps(engine.simulation)
     except Exception as e:
         res = "error : " + str(e)

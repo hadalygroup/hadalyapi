@@ -53,7 +53,7 @@ class Strategy:
     def convert_cross_part(self,logic):
         coplogic=logic.copy()
         step=0
-        while {'crossover': {}} or {{' crossover ': {}}} in coplogic:
+        while {'crossover': {}} in coplogic:
             compt=0
             for i in coplogic:
                 if list(i.keys())[0]=='crossover' or list(i.keys())[0]==' crossover ':

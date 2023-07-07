@@ -139,12 +139,13 @@ class Strategy:
                         'log':[],
                         'trade_return':[],
                         'move_info':[]}
+            
             indicators_entry =  calculateIndicators(data, self.indicators_entry)
             indicators_exit = calculateIndicators(data, self.indicators_exit)
             security_stock_price= data['close'][0]
             trailing_stop_price = security_stock_price * (1 - float(self.trailing_stop)/ 100)
             last_stock_price=0
-
+            
 
             for day in range(len(data['close'])):
                 stock = Stock(data['close'][day], data['close_time'][day])
@@ -153,6 +154,7 @@ class Strategy:
 
                 should_entry = self.eval_condition(self.logic_entry, self.indicators_entry, indicators_entry, day)
                 should_exit = self.eval_condition(self.logic_exit, self.indicators_exit, indicators_exit, day)
+                
                 if stock.price > last_stock_price:
                     trailing_stop_price = stock.price * (1-float(self.trailing_stop)/100)
 

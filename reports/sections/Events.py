@@ -100,6 +100,15 @@ def format_events(described_events: List[dict], is_past_event: bool) -> str:
 
 
 def previous_event(portfolio_allocation) -> str:
+    """
+    Getting all the events in the past week and formatting the information to fit it to the portfolio
+
+    Input:
+        portfolio_allocation: Dictionnary where the keys are the stock tickers and the values are the percentage of each one in this portfolio
+    
+    Output:
+        events_html: Formatted HTML code of the events in the past week that we impactful to the portfolio (str)
+    """
     previous_events = get_events(-7)
     important_events = review_events(previous_events, portfolio_allocation)
     described_events = describe_events(previous_event, important_events)
@@ -107,8 +116,17 @@ def previous_event(portfolio_allocation) -> str:
     return events_html
 
 def upcomming_event(portfolio_allocation) -> str:
+    """
+    Getting all the events in the upcomming week and formatting the information to fit it to the portfolio
+
+    Input:
+        portfolio_allocation: Dictionnary where the keys are the stock tickers and the values are the percentage of each one in this portfolio
+    
+    Output:
+        events_html: Formatted HTML code of the events in the upcomming week that we impactful to the portfolio (str)
+    """
     previous_events = get_events(7)
     important_events = review_events(previous_events, portfolio_allocation)
     described_events = describe_events(previous_event, important_events)
-    events_html = format_events(described_events, True)
+    events_html = format_events(described_events, False)
     return events_html

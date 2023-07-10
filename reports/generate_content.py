@@ -13,7 +13,9 @@ def generate_HTML(
         portfolio_value: int,
         important_stocks:str,
         portfolio_allocation: dict,
-        portfolio: dict
+        portfolio: dict,
+        portfolio_beta: float,
+        betas: List[float]
         ):
     """"
     Generate the HTML code that will generate the whole report
@@ -23,15 +25,15 @@ def generate_HTML(
     """
     
     formated_HTML = HTML().format(date = dt.date.today().strftime("%Y-%m-%d"),
-                                portfolio_value = portfolio_value,
-                                important_stocks = important_stocks,
-                                portfolio_overview = general_description(portfolio_allocation),
-                                perfomance_vsSP500 = review_sp500(portfolio), #TODO
-                                historical_performance = portfolio_performance(stock_list,n_stock),
-                                beta_legend = beta_evaluation(), #TODO
-                                risk_exposure = evaluate_risk(), #TODO
-                                previous_events = previous_event(portfolio_allocation),
-                                upcomming_event_ph = upcomming_event(portfolio_allocation)
+                                portfolio_value = portfolio_value, #done
+                                important_stocks = important_stocks, #done
+                                portfolio_overview = general_description(portfolio_allocation), #done
+                                perfomance_vsSP500 = review_sp500(portfolio), 
+                                historical_performance = portfolio_performance(stock_list,n_stock), #done
+                                beta_legend = beta_evaluation(portfolio_beta), #done
+                                risk_exposure = evaluate_risk(portfolio_beta, betas), #done
+                                previous_events = previous_event(portfolio_allocation), #done
+                                upcomming_event_ph = upcomming_event(portfolio_allocation) #done
                                 )
     
     return formated_HTML

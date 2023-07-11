@@ -5,6 +5,8 @@ from util.market_data import get_data_yfinance as get_market_data
 from reports.sections.Risk.get_beta_data import get_betas
 from reports.sections.General_description.important_stocks import important_stocks
 
+from weasyprint import HTML, CSS
+from weasyprint.text.fonts import FontConfiguration
 import time
 import datetime as dt
 
@@ -37,6 +39,15 @@ def generate_report(portfolio: dict):
             betas=stock_betas
             )
     
-    print(html)
+    filename = f"./reports/generated_reports/hadaly-report-{time.time()}.pdf"
+
+    font_config = FontConfiguration()
+
+    css = CSS(filename="./reports/report.css")
+    html_obj = HTML(string=html, base_url=".")
+    html_obj.write_pdf(
+        filename, stylesheets=[css],
+        font_config=font_config)
+
     
     return

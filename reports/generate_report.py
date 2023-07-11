@@ -28,6 +28,7 @@ def generate_report(portfolio: dict):
     for stock, amount in stocks_value.items():
         portfolio_allocation[stock] = amount[0] * 100 /portfolio_total_value[0]
 
+    portfolio_total_value = round(portfolio_total_value, 2)
     time.sleep(5)
 
     stock_betas, portfolio_beta = get_betas(portfolio_allocation)

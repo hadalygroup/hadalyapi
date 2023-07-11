@@ -91,6 +91,7 @@ def review_sp500(portfolio):
     _,_, performance_1y = get_portfolio_return(portfolio)
     sp_500 = sp500(365)
     difference = performance_1y - sp_500
+    difference = round(difference, 3)
     benchmark_interpretation = f"Unfortunately, your portfolio did not beat the S&P500 by {difference}%"
     if difference>0:
         benchmark_interpretation = f"Congratulations, your portfolio has beaten the S&P500 by {difference}%"

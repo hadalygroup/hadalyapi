@@ -3,7 +3,7 @@ def important_stocks(portfolio_allocation):
     important_stocks = ""
     for index, item in enumerate(sorted_portfolio[:3]):
         stock, value = item
-        important_stocks += f"{stock} at {value}%"
+        important_stocks += f"{stock} at {round(value),3}%"
         if index != 2:
             important_stocks += ", "
     return important_stocks

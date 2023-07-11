@@ -10,6 +10,7 @@ def ask_GPT(question: str) -> str:
         chat_response -> its answer
     """
     try:
+        print(" -- Communicating with GPT -- ")
         chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": question}])
         chat_response = chat_completion.choices[0].message.content
     except Exception as e:

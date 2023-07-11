@@ -12,7 +12,7 @@ def HTML():
             <div class="Subtitle" id="sub1">Portfolio Overview</div>
             <div class="chart-container">
             <figure>
-                <img src="graphs/donut.png" height="100%">
+                <img src="./reports/graphs/donut-{report_id}.png" height="100%">
             </figure>
             <div class="chart-legend" id="allocation-legend">Your portfolio is valued at {portfolio_value}$ and contains mainly {important_stocks} </div>
             </div>
@@ -26,7 +26,7 @@ def HTML():
             <div class="Subtitle" id="sib2">Performance evaluation</div>
             <div>
             <figure>
-                <img src="graphs/benchmark.png" height="100%">
+                <img src="./reports/graphs/benchmark-{report_id}.png" height="100%">
             </figure>
             <div class="chart-legend">{performance_vsSP500}</div>
             </div>
@@ -43,7 +43,7 @@ def HTML():
             <div class="Subtitle" id="sib3">Risk exposure and Volatility</div>
             <div>
             <figure>
-            <img src="graphs/beta.png">
+            <img src="./reports/graphs/beta-{report_id}.png">
             </figure>
             <div class="chart-legend">{beta_legend}</div>
             </div>

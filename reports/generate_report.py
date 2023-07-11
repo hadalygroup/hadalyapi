@@ -1,4 +1,3 @@
-from typing import List
 from reports.generate_content import generate_HTML
 from util.last_open_day import get_previous_open_day
 from util.market_data import get_data_yfinance as get_market_data
@@ -9,8 +8,11 @@ from weasyprint import HTML, CSS
 from weasyprint.text.fonts import FontConfiguration
 import time
 import datetime as dt
+from reports.graphs.generateGraphs import generate_graphs
 
 def generate_report(portfolio: dict):
+    report_id = time.time()
+
     today = dt.date.today()
     day_before = get_previous_open_day(today)
     day_before = day_before.strftime('%Y-%m-%d')
@@ -24,22 +26,27 @@ def generate_report(portfolio: dict):
     
     portfolio_allocation = {}
     for stock, amount in stocks_value.items():
-        portfolio_allocation[stock] = amount * 100 /portfolio_total_value
+        portfolio_allocation[stock] = amount[0] * 100 /portfolio_total_value[0]
 
     time.sleep(5)
 
     stock_betas, portfolio_beta = get_betas(portfolio_allocation)
+ 
+    generate_graphs(portfolio_allocation, portfolio, portfolio_beta, report_id)
+
+  
     
-    html = generate_HTML( #debug here
+    html = generate_HTML(
             portfolio=portfolio,
             portfolio_value=portfolio_total_value,
             important_stocks= important_stocks(portfolio_allocation),
             portfolio_allocation = portfolio_allocation,
             portfolio_beta= portfolio_beta,
-            betas=stock_betas
+            betas=stock_betas,
+            report_id=report_id
             )
     
-    filename = f"./reports/generated_reports/hadaly-report-{time.time()}.pdf"
+    filename = f"./reports/generated_reports/hadaly-report-{report_id}.pdf"
 
     font_config = FontConfiguration()
 

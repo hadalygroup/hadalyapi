@@ -13,7 +13,8 @@ def generate_HTML(
         important_stocks: List[Tuple],
         portfolio_allocation: dict,
         portfolio_beta: float,
-        betas: dict
+        betas: dict,
+        report_id: float
         ):
     """"
     Generate the HTML code that will generate the whole report
@@ -40,6 +41,7 @@ def generate_HTML(
     next_events = upcomming_event(portfolio_allocation)
 
     formated_HTML = html.format(date = today_date,
+                                report_id = report_id,
                                 portfolio_value = portfolio_value, #done
                                 important_stocks = important_stocks, #done
                                 portfolio_overview = general_description_paragraph, #done

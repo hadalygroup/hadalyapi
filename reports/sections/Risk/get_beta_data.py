@@ -49,6 +49,6 @@ def get_betas(portfolio_allocation: dict) -> Tuple[float, dict]:
     for stock, OHLC in OHLC_data.items():
         beta = calculate_beta(OHLC)
         stock_betas[stock] = beta
-        portfolio_beta += beta * portfolio_allocation[stock]
-    
+        portfolio_beta += (beta * portfolio_allocation[stock]) / 100
+
     return stock_betas, portfolio_beta

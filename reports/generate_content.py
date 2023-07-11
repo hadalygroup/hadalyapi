@@ -50,5 +50,5 @@ def generate_HTML(
                                 previous_events = past_events, #done
                                 upcomming_events = next_events #done
                                 )
-    print("here2")
+    
     return formated_HTML

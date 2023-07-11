@@ -14,7 +14,7 @@ def HTML():
             <figure>
                 <img src="graphs/donut.png" height="100%">
             </figure>
-            <div class="chart-legend" id="allocation-legend">Your portfolio is valued at {portfolio_value}$ and contains {important_stocks} </div>
+            <div class="chart-legend" id="allocation-legend">Your portfolio is valued at {portfolio_value}$ and contains mainly {important_stocks} </div>
             </div>
             <div class="paragraph" id="par1">{portfolio_overview}</div>
         </div>

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # redis credentials
-    REDISUSER: str = "" # faire en sorte d'utiliser dotenv
+    REDISUSER: str = "" 
     REDISPASSWORD: str = ""
     REDISHOST: str = ""
     REDISPORT: str = ""

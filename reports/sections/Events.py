@@ -21,11 +21,12 @@ def get_events(timeframe: int) -> pd.DataFrame:
     other_date = today + datetime.timedelta(days=timeframe)
     today = today.strftime('%Y-%m-%d')
     other_date = other_date.strftime('%Y-%m-%d')
+    
     if timeframe > 0:
         events = get_economic_calendar(start_date=today, end_date=other_date, countries= ['Canada', 'United States'])
     else:
         events = get_economic_calendar(start_date=other_date, end_date=today, countries= ['Canada', 'United States'])
-
+    
     return events
 
 
@@ -68,14 +69,14 @@ def describe_events(events: pd.DataFrame, important_events: List[str]) -> List[d
     for event in important_events:
         describe_prompt = f"Describe this economic event in one sentence: {event}"
         description = ask_GPT(describe_prompt)
-        date = grouped.get_group(event)['date'].iloc[-1]
+        date = grouped.get_group(event)['Date'].iloc[-1]
         event_dict = {
             "name": event,
             "description" : description,
             "date": date
         }
         events_list.append(event_dict)
-
+    return events_list
 
 def format_events(described_events: List[dict], is_past_event: bool) -> str:
     """
@@ -109,9 +110,11 @@ def previous_event(portfolio_allocation) -> str:
     Output:
         events_html: Formatted HTML code of the events in the past week that we impactful to the portfolio (str)
     """
-    previous_events = get_events(-7)
-    important_events = review_events(previous_events, portfolio_allocation)
-    described_events = describe_events(previous_event, important_events)
+    days_before = -7
+    previous_events_df = get_events(days_before)
+    
+    important_events = review_events(previous_events_df, portfolio_allocation)
+    described_events = describe_events(previous_events_df, important_events)
     events_html = format_events(described_events, True)
     return events_html
 
@@ -125,8 +128,8 @@ def upcomming_event(portfolio_allocation) -> str:
     Output:
         events_html: Formatted HTML code of the events in the upcomming week that we impactful to the portfolio (str)
     """
-    previous_events = get_events(7)
-    important_events = review_events(previous_events, portfolio_allocation)
-    described_events = describe_events(previous_event, important_events)
+    events_df = get_events(7)
+    important_events = review_events(events_df, portfolio_allocation)
+    described_events = describe_events(events_df, important_events)
     events_html = format_events(described_events, False)
     return events_html

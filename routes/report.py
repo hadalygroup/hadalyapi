@@ -1,16 +1,14 @@
 import json
-from reports.generate_content import generate_HTML
 from fastapi import APIRouter
 from models.Report_request import report_request as Request
-from weasyprint import HTML, CSS
-from weasyprint.text.fonts import FontConfiguration
-
+from reports.generate_report import generate_report
 
 router = APIRouter()
 
 @router.post("/report")
 async def getIndicators(req: Request):
     res = {}
+    generate_report(req.portfolio)
     # events = get_past_events()
     # imp_events = review_past_events({"JPM": 0.0784, "KO": 0.5359, "JNJ": 0.1067, "PG": 0.275, "VZ": 0.004})
     # if imp_events != None:

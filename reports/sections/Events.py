@@ -46,6 +46,7 @@ def review_events(events: pd.DataFrame, portfolio_allocation: dict) -> List[str]
     From these events return a python array(list) of the 3 most important ones for this portfolio: {list(portfolio_allocation.keys())}
     """
     response = ask_GPT(past_events_prompt)
+    print(response)
     try:
         events = ast.literal_eval(response)
     except Exception as e:

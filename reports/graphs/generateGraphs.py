@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 from util.sp500_performance import get_stock_data_monthly as stock_data
 from util.calculate_return import calculate_return
 from plotly.io import write_image
+import os
 
 DONUT_COLORS = ['#f992ad', '#fbbcee', '#fab4c8', '#f78ecf', '#cfb9f7', '#e0cefd', '#a480f2', '#d4b0f9', '#c580ed', '#d199f1']
 BENCHMARK_COLORS = ["#ffc7fb", "#4d4d4d"]
@@ -16,6 +17,10 @@ def add_lists(lists):
     return result
 
 def generate_graphs(portfolio_allocation: dict, portfolio: dict, beta: float, report_id: float):
+    directory  = "./reports/graphs/"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     generate_donut(portfolio_allocation, report_id)
 
     generate_benchmark(portfolio, report_id)

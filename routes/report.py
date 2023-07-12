@@ -7,6 +7,6 @@ router = APIRouter()
 
 @router.post("/report")
 async def getIndicators(req: Request, backgroud_task: BackgroundTasks):
-    backgroud_task.add_task(generate_report, req.portfolio)
+    backgroud_task.add_task(generate_report, req.portfolio, req.email)
     return {"message": "started"}
 

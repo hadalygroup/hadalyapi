@@ -47,12 +47,27 @@ def review_events(events: pd.DataFrame, portfolio_allocation: dict) -> List[str]
     """
     response = ask_GPT(past_events_prompt)
     print(response)
-    try:
-        events = ast.literal_eval(response)
-    except Exception as e:
-        print("Error as occured in review_past_events: ", e)
-        return None
-    return events
+    attempts = 0
+    while attempts < 3:
+        try:
+            events = ast.literal_eval(response)
+            if len(events) > 3:
+                events = events[:3]
+            if len(events) < 3:
+                continue
+            return events
+        except SyntaxError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
+        except TypeError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
+        except ValueError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
 
 def describe_events(events: pd.DataFrame, important_events: List[str]) -> List[dict]:
     """
@@ -68,14 +83,21 @@ def describe_events(events: pd.DataFrame, important_events: List[str]) -> List[d
     events_list = []
     grouped = events.groupby("Event")
     for event in important_events:
-        describe_prompt = f"Describe this economic event in one sentence: {event}"
-        description = ask_GPT(describe_prompt)
-        date = grouped.get_group(event)['Date'].iloc[-1]
-        event_dict = {
-            "name": event,
-            "description" : description,
-            "date": date
-        }
+        if event is None:
+            event_dict = {
+                "name": event,
+                "description" : "Sorry we couldn't find an important event for your portfolio",
+                "date": datetime.date.today().strftime('%Y-%m-%d')
+            }
+        else:
+            describe_prompt = f"Describe this economic event in one sentence: {event}"
+            description = ask_GPT(describe_prompt)
+            date = grouped.get_group(event)['Date'].iloc[-1]
+            event_dict = {
+                "name": event,
+                "description" : description,
+                "date": date
+            }
         events_list.append(event_dict)
     return events_list
 

@@ -11,10 +11,10 @@ class Settings(BaseSettings):
     load_dotenv(dotenv_path)
 
     #redis credentials
-    REDISUSER = os.environ.get("REDISUSER")
-    REDISPASSWORD = os.environ.get("REDISPASSWORD")
-    REDISHOST = os.environ.get("REDISHOST")
-    REDISPORT = os.environ.get("REDISPORT")
+    REDISUSER: str = os.environ.get("REDISUSER")
+    REDISPASSWORD: str = os.environ.get("REDISPASSWORD")
+    REDISHOST: str = os.environ.get("REDISHOST")
+    REDISPORT: str = os.environ.get("REDISPORT")
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     BACKEND_CORS_ORIGINS: List[str] = [
         "*"

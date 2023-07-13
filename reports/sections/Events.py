@@ -21,11 +21,12 @@ def get_events(timeframe: int) -> pd.DataFrame:
     other_date = today + datetime.timedelta(days=timeframe)
     today = today.strftime('%Y-%m-%d')
     other_date = other_date.strftime('%Y-%m-%d')
+    
     if timeframe > 0:
         events = get_economic_calendar(start_date=today, end_date=other_date, countries= ['Canada', 'United States'])
     else:
         events = get_economic_calendar(start_date=other_date, end_date=today, countries= ['Canada', 'United States'])
-
+    
     return events
 
 
@@ -45,12 +46,28 @@ def review_events(events: pd.DataFrame, portfolio_allocation: dict) -> List[str]
     From these events return a python array(list) of the 3 most important ones for this portfolio: {list(portfolio_allocation.keys())}
     """
     response = ask_GPT(past_events_prompt)
-    try:
-        events = ast.literal_eval(response)
-    except Exception as e:
-        print("Error as occured in review_past_events: ", e)
-        return None
-    return events
+    print(response)
+    attempts = 0
+    while attempts < 3:
+        try:
+            events = ast.literal_eval(response)
+            if len(events) > 3:
+                events = events[:3]
+            if len(events) < 3:
+                continue
+            return events
+        except SyntaxError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
+        except TypeError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
+        except ValueError:
+            attempts += 1
+            response = ask_GPT(past_events_prompt)
+            return [None,None,None]
 
 def describe_events(events: pd.DataFrame, important_events: List[str]) -> List[dict]:
     """
@@ -66,16 +83,23 @@ def describe_events(events: pd.DataFrame, important_events: List[str]) -> List[d
     events_list = []
     grouped = events.groupby("Event")
     for event in important_events:
-        describe_prompt = f"Describe this economic event in one sentence: {event}"
-        description = ask_GPT(describe_prompt)
-        date = grouped.get_group(event)['date'].iloc[-1]
-        event_dict = {
-            "name": event,
-            "description" : description,
-            "date": date
-        }
+        if event is None:
+            event_dict = {
+                "name": event,
+                "description" : "Sorry we couldn't find an important event for your portfolio",
+                "date": datetime.date.today().strftime('%Y-%m-%d')
+            }
+        else:
+            describe_prompt = f"Describe this economic event in one sentence: {event}"
+            description = ask_GPT(describe_prompt)
+            date = grouped.get_group(event)['Date'].iloc[-1]
+            event_dict = {
+                "name": event,
+                "description" : description,
+                "date": date
+            }
         events_list.append(event_dict)
-
+    return events_list
 
 def format_events(described_events: List[dict], is_past_event: bool) -> str:
     """
@@ -100,15 +124,35 @@ def format_events(described_events: List[dict], is_past_event: bool) -> str:
 
 
 def previous_event(portfolio_allocation) -> str:
-    previous_events = get_events(-7)
-    important_events = review_events(previous_events, portfolio_allocation)
-    described_events = describe_events(previous_event, important_events)
+    """
+    Getting all the events in the past week and formatting the information to fit it to the portfolio
+
+    Input:
+        portfolio_allocation: Dictionnary where the keys are the stock tickers and the values are the percentage of each one in this portfolio
+    
+    Output:
+        events_html: Formatted HTML code of the events in the past week that we impactful to the portfolio (str)
+    """
+    days_before = -7
+    previous_events_df = get_events(days_before)
+    
+    important_events = review_events(previous_events_df, portfolio_allocation)
+    described_events = describe_events(previous_events_df, important_events)
     events_html = format_events(described_events, True)
     return events_html
 
 def upcomming_event(portfolio_allocation) -> str:
-    previous_events = get_events(7)
-    important_events = review_events(previous_events, portfolio_allocation)
-    described_events = describe_events(previous_event, important_events)
-    events_html = format_events(described_events, True)
+    """
+    Getting all the events in the upcomming week and formatting the information to fit it to the portfolio
+
+    Input:
+        portfolio_allocation: Dictionnary where the keys are the stock tickers and the values are the percentage of each one in this portfolio
+    
+    Output:
+        events_html: Formatted HTML code of the events in the upcomming week that we impactful to the portfolio (str)
+    """
+    events_df = get_events(7)
+    important_events = review_events(events_df, portfolio_allocation)
+    described_events = describe_events(events_df, important_events)
+    events_html = format_events(described_events, False)
     return events_html

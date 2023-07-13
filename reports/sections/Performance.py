@@ -28,8 +28,8 @@ def get_portfolio_return(portfolio: dict) -> float:
         start_date = start_date.strftime("%Y-%m-%d")
         for ticker, amount in portfolio.items():
             price = historical_data_gmd(ticker,start_date, end_date, "1d")
-            initial_value += price[0] * amount
-            final_value += price[-1] * amount
+            initial_value += price["close"][0] * amount
+            final_value += price["close"][-1] * amount
         performance[i] = calculate_return(initial_value, final_value)
     return performance[7], performance[90], performance[365]
 
@@ -91,6 +91,7 @@ def review_sp500(portfolio):
     _,_, performance_1y = get_portfolio_return(portfolio)
     sp_500 = sp500(365)
     difference = performance_1y - sp_500
+    difference = round(difference, 3)
     benchmark_interpretation = f"Unfortunately, your portfolio did not beat the S&P500 by {difference}%"
     if difference>0:
         benchmark_interpretation = f"Congratulations, your portfolio has beaten the S&P500 by {difference}%"

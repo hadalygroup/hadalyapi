@@ -1,12 +1,20 @@
 from typing import List, Union
 
-from dotenv import load_dotenv
 from pydantic import BaseSettings, validator
 
-load_dotenv()
-
+import os 
+from os.path import join, dirname
+from dotenv import load_dotenv
 
 class Settings(BaseSettings):
+    dotenv_path = join(dirname(__file__), '.env')
+    load_dotenv(dotenv_path)
+
+    #redis credentials
+    REDISUSER: str = os.environ.get("REDISUSER")
+    REDISPASSWORD: str = os.environ.get("REDISPASSWORD")
+    REDISHOST: str = os.environ.get("REDISHOST")
+    REDISPORT: str = os.environ.get("REDISPORT")
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     BACKEND_CORS_ORIGINS: List[str] = [
         "*"
@@ -21,12 +29,6 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
-
-    # redis credentials
-    REDISUSER: str = "" # faire en sorte d'utiliser dotenv
-    REDISPASSWORD: str = ""
-    REDISHOST: str = ""
-    REDISPORT: str = ""
 
 
     @validator("REDISHOST", "REDISPORT")

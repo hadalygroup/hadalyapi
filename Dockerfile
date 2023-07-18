@@ -1,14 +1,13 @@
 # Define custom function directory
 ARG FUNCTION_DIR="/function"
 
-FROM python:3.10 as build-image
+FROM python:3.10
 # Set working directory to function root directory
+ARG FUNCTION_DIR
 WORKDIR ${FUNCTION_DIR}
 
 COPY . .
 
-# Cd into the function directory
-RUN cd ${FUNCTION_DIR}
 # Installing poetry
 RUN pip install poetry
 # Install TA-lib

@@ -5,7 +5,6 @@ from fastapi_cache.decorator import cache
 
 router = APIRouter()
 
-@cache(expire=30)  # cache for 30 seconds
 @router.get("/cached", response_model=UserResponse)
 async def cached():
     # for demonstration purposes, this is a slow endpoint that waits 5 seconds

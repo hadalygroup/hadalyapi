@@ -8,6 +8,7 @@ import openai
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+from mangum import Mangum
 
 from fastapi import Depends, FastAPI
 from fastapi_cache import FastAPICache
@@ -96,5 +97,5 @@ def dev():
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+handler = Mangum(app)
